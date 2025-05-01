@@ -132,7 +132,6 @@ body.light-mode .menu-button:hover {
 .menu-button i {
     font-size: 1rem;
 }
-
 /* Theme Toggle Styling */
 .theme-toggle {
     display: flex;
@@ -171,8 +170,8 @@ body.light-mode .theme-toggle .fa-sun {
 
 body.light-mode .theme-toggle .fa-moon {
     opacity: 1;
+    color: #000000; /* Changed to black for dark moon icon in light mode */
 }
-
 /* Ensure header content is above menu */
 header {
     position: relative;
