@@ -1,0 +1,445 @@
+/* Custom Styles */
+:root {
+    --bg-dark: #1f2937;
+    --bg-light: #fff1e5;
+    --text-dark: #e5e7eb;
+    --text-light: #4a5e6a;
+    --button-text-dark: #34d399;
+ lạnh
+
+html, body {
+    font-family: 'Fira Mono', monospace;
+    background-color: var(--bg-dark);
+    color: var(--text-dark);
+    letter-spacing: 0.02em;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+}
+
+body.light-mode {
+    background-color: var(--bg-light);
+    color: var(--text-light);
+}
+
+/* Section Styles (Editor Panel with Gradient) */
+.pastel-section {
+    background: linear-gradient(to bottom, #2d3748, #1f2937);
+    border: 1px solid #2dd4bf;
+    box-shadow: 0 4px 6px rgba(45, 212, 191, 0.2);
+}
+
+body.light-mode .pastel-section {
+    background: linear-gradient(to bottom, #f5e8d8, #fff1e5);
+    border: 1px solid #2a9d8f;
+    box-shadow: 0 4px 6px rgba(42, 157, 143, 0.2);
+}
+
+.pastel-accent {
+    color: #34d399;
+}
+
+body.light-mode .pastel-accent {
+    color: #2a9d8f;
+}
+
+.pastel-accent:hover {
+    color: #6ee7b7;
+}
+
+body.light-mode .pastel-accent:hover {
+    color: #52b4a8;
+}
+
+.pastel-heading {
+    color: #fb923c;
+}
+
+body.light-mode .pastel-heading {
+    color: #d67b4b;
+}
+
+.skill-tag {
+    background-color: #4b5563;
+    color: #22d3ee;
+}
+
+body.light-mode .skill-tag {
+    background-color: #e5d9c8;
+    color: #287271;
+}
+
+.skill-tag:hover {
+    color: #a5f3fc;
+}
+
+body.light-mode .skill-tag:hover {
+    color: #4a908f;
+}
+
+/* Menu Styling (Fully Transparent) */
+.menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    padding: 1rem 2rem;
+    background: transparent;
+    transition: background 0.3s ease;
+}
+
+body.light-mode .menu {
+    background: transparent;
+}
+
+.menu-text {
+    color: #e5e7eb;
+}
+
+body.light-mode .menu-text {
+    color: #4a5e6a;
+}
+
+.menu-button {
+    background: transparent;
+    color: #34d399;
+    font-family: 'Fira Mono', monospace;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    transition: color 0.3s ease;
+    cursor: pointer;
+}
+
+body.light-mode .menu-button {
+    background: transparent;
+    color: #2a9d8f;
+}
+
+.menu-button:hover {
+    color: #6ee7b7;
+}
+
+body.light-mode .menu-button:hover {
+    color: #52b4a8;
+}
+
+.menu-button i {
+    font-size: 1rem;
+}
+
+/* Theme Toggle Styling */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    width: 40px;
+    height: 24px;
+}
+
+.theme-toggle input {
+    display: none;
+}
+
+.theme-toggle .fa-sun {
+    color: #fb923c;
+    font-size: 1rem;
+    position: absolute;
+    left: 4px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.theme-toggle .fa-moon {
+    color: #6ee7b7;
+    font-size: 1rem;
+    position: absolute;
+    right: 4px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+body.light-mode .theme-toggle .fa-sun {
+    opacity: 0;
+}
+
+body.light-mode .theme-toggle .fa-moon {
+    opacity: 1;
+}
+
+/* Ensure header content is above menu */
+header {
+    position: relative;
+    z-index: 60;
+}
+
+/* Animation adjustments */
+[data-aos] {
+    transition-property: transform, opacity;
+}
+
+/* Skill tag styling */
+.skill-tag {
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: inline-block;
+    margin: 0.25rem;
+    transition: transform 0.2s ease, color 0.3s ease;
+}
+
+.skill-tag:hover {
+    transform: translateY(-2px);
+}
+
+/* Timeline styling (Code-like structure) */
+.timeline-item {
+    position: relative;
+    padding-left: 2.5rem;
+    padding-bottom: 1.5rem;
+    transition: border-color 0.3s ease;
+}
+
+.timeline-item.has-sub-items {
+    border-left: 2px dotted #34d399;
+}
+
+body.light-mode .timeline-item.has-sub-items {
+    border-left: 2px dotted #2a9d8f;
+}
+
+.timeline-item:hover {
+    border-left-color: #6ee7b7;
+}
+
+body.light-mode .timeline-item:hover {
+    border-left-color: #52b4a8;
+}
+
+.timeline-item:last-child {
+    border-left-color: transparent;
+    padding-bottom: 0;
+}
+
+.timeline-sub-item {
+    position: relative;
+    padding-left: 1.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 1rem;
+    border-left: 2px dotted #22d3ee;
+    margin-left: -1.1rem;
+    margin-top: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+body.light-mode .timeline-sub-item {
+    border-left: 2px dotted #287271;
+}
+
+.timeline-sub-item:hover {
+    border-left-color: #a5f3fc;
+}
+
+body.light-mode .timeline-sub-item:hover {
+    border-left-color: #4a908f;
+}
+
+.timeline-sub-item:last-child {
+    padding-bottom: 0;
+    border-left-color: transparent;
+}
+
+.timeline-sub-item::before {
+    content: '';
+    position: absolute;
+    left: -0.4rem;
+    top: 0.85rem;
+    width: 0.6rem;
+    height: 0.6rem;
+    background-color: #34d399;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+body.light-mode .timeline-sub-item::before {
+    background-color: #2a9d8f;
+}
+
+.timeline-icon {
+    position: absolute;
+    left: -0.7rem;
+    top: 0;
+    background-color: #374151;
+    border-radius: 50%;
+    padding: 0.25rem;
+    color: #34d399;
+    width: 1.75rem;
+    height: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+body.light-mode .timeline-icon {
+    background-color: #f5e8d8;
+    color: #2a9d8f;
+}
+
+.timeline-icon:hover {
+    color: #6ee7b7;
+}
+
+body.light-mode .timeline-icon:hover {
+    color: #52b4a8;
+}
+
+.timeline-icon i {
+    font-size: 0.8rem;
+}
+
+/* Section header styling */
+h2 {
+    font-family: 'Fira Mono', monospace;
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+h2 i {
+    color: #34d399;
+}
+
+body.light-mode h2 i {
+    color: #2a9d8f;
+}
+
+h3 {
+    font-family: 'Fira Mono', monospace;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #fb923c;
+    margin-bottom: 0.25rem;
+}
+
+body.light-mode h3 {
+    color: #d67b4b;
+}
+
+h4 {
+    font-family: 'Fira Mono', monospace;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin-bottom: 0.75rem;
+}
+
+body.light-mode h4 {
+    color: #7a6e5e;
+}
+
+h5 {
+    font-family: 'Fira Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fb923c;
+    margin-bottom: 0.1rem;
+}
+
+body.light-mode h5 {
+    color: #d67b4b;
+}
+
+.sub-role-dates {
+    font-family: 'Fira Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin-bottom: 0.75rem;
+}
+
+body.light-mode .sub-role-dates {
+    color: #7a6e5e;
+}
+
+/* List item text color */
+.list-text-light-mode {
+    color: #e5e7eb;
+}
+
+body.light-mode .list-text-light-mode {
+    color: #4a5e6a;
+}
+
+/* Education degree details */
+.degree-details-light-mode {
+    color: #6b7280;
+}
+
+body.light-mode .degree-details-light-mode {
+    color: #7a6e5e;
+}
+
+/* Key project labels */
+.key-project-label {
+    color: #c084fc;
+}
+
+body.light-mode .key-project-label {
+    color: #9b59b6;
+}
+
+/* Link styling (Syntax Highlighting) */
+a {
+    color: #2dd4bf;
+    transition: color 0.3s ease;
+}
+
+body.light-mode a {
+    color: #2a9d8f;
+}
+
+a:hover {
+    color: #5eead4;
+}
+
+body.light-mode a:hover {
+    color: #52b4a8;
+}
+
+/* Header/Contact section specific styles */
+.contact-info a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.contact-info i {
+    width: 1.25rem;
+    text-align: center;
+    color: #34d399;
+    transition: color 0.3s ease;
+}
+
+body.light-mode .contact-info i {
+    color: #2a9d8f;
+}
+
+.contact-info i:hover {
+    color: #6ee7b7;
+}
+
+body.light-mode .contact-info i:hover {
+    color: #52b4a8;
+}
