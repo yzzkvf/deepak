@@ -39,7 +39,7 @@ body.light-mode .pastel-section {
 }
 
 body.light-mode .pastel-accent {
-    color: #2a9d8f;
+    color: #1d7874;
 }
 
 .pastel-accent:hover {
@@ -47,7 +47,7 @@ body.light-mode .pastel-accent {
 }
 
 body.light-mode .pastel-accent:hover {
-    color: #52b4a8;
+    color: #348a87;
 }
 
 .pastel-heading {
