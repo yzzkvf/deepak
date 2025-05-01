@@ -5,9 +5,10 @@
     --text-dark: #e5e7eb;
     --text-light: #4a5e6a;
     --button-text-dark: #34d399;
- lạnh
+}
 
-html, body {
+html,
+body {
     font-family: 'Fira Mono', monospace;
     background-color: var(--bg-dark);
     color: var(--text-dark);
@@ -39,7 +40,7 @@ body.light-mode .pastel-section {
 }
 
 body.light-mode .pastel-accent {
-    color: #1d7874;
+    color: #2a9d8f;
 }
 
 .pastel-accent:hover {
@@ -442,4 +443,14 @@ body.light-mode .contact-info i {
 
 body.light-mode .contact-info i:hover {
     color: #52b4a8;
+}
+
+/* Profile picture border in light mode */
+body.light-mode img.border-teal-300 {
+    border-color: #2a9d8f;
+}
+
+/* Job title text in light mode */
+body.light-mode p.text-teal-300 {
+    color: #2a9d8f;
 }
