@@ -7,10 +7,8 @@
         <title>Deepak Samuel Rajan - Kotlin Multiplatform Developer</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-                integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-                referrerpolicy="no-referrer" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com" rel="preconnect" />
-        <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+                xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+                referrerPolicy="no-referrer" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap"
                 rel="stylesheet" />
         <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
@@ -18,17 +16,8 @@
 </head>
 
 <body class="bg-gray-900 text-gray-200 leading-relaxed">
-        <!-- Top Menu -->
-        <nav class="menu flex justify-end items-center gap-4">
-                <button class="menu-button" id="download-resume">
-                        <i class="fas fa-file-download"></i> Download Resume
-                </button>
-                <label class="theme-toggle">
-                        <input type="checkbox" id="theme-toggle-checkbox">
-                        <i class="fas fa-sun"></i>
-                        <i class="fas fa-moon"></i>
-                </label>
-        </nav>
+        <div id="stargaze-background" class="star-background"></div> <!-- Global star background -->
+
         <div class="max-w-5xl mx-auto p-4 md:p-8 lg:p-12 pt-24">
                 <header class="flex flex-col md:flex-row items-center justify-between mb-12 gap-8" data-aos="fade-down">
                         <div class="flex-shrink-0">
@@ -54,6 +43,11 @@
                                                 id="linkedin-link" rel="noopener noreferrer" target="_blank">
                                                 <i class="fab fa-linkedin fa-fw text-green-400"></i> LinkedIn Profile
                                         </a>
+                                </div>
+                                <div class="menu-controls flex justify-center items-center gap-4">
+                                        <button class="menu-button" id="download-resume">
+                                                <i class="fas fa-file-arrow-down"></i> Download Resume
+                                        </button>
                                 </div>
                         </div>
                 </header>
@@ -139,234 +133,155 @@
                                         <h3 class="text-orange-400 font-semibold mb-2">Architecture & Tools</h3>
                                         <p>
                                                 <span class="skill-tag">MVVM</span> <span class="skill-tag">MVI</span>
-                                                <span class="skill-tag">MVC</span> <span class="skill-tag">VIPER</span>
-                                                <span class="skill-tag">Koin</span> <span class="skill-tag">Hilt</span>
-                                                <span class="skill-tag">Android Studio</span> <span
-                                                        class="skill-tag">Xcode</span> <span
-                                                        class="skill-tag">Git</span>
-                                                <span class="skill-tag">GitHub</span> <span
-                                                        class="skill-tag">IntelliJ</span> <span
-                                                        class="skill-tag">Fleet</span>
-                                                <span class="skill-tag">Slack</span> <span
-                                                        class="skill-tag">Webex</span>
+                                                <span class="skill-tag">Clean Architecture</span> <span
+                                                        class="skill-tag">RESTful APIs</span>
+                                                <span class="skill-tag">Git</span> <span class="skill-tag">Jira</span>
+                                                <span class="skill-tag">Agile/Scrum</span> <span
+                                                        class="skill-tag">CI/CD</span>
+                                                <span class="skill-tag">Unit Testing</span> <span
+                                                        class="skill-tag">Integration Testing</span>
                                         </p>
                                 </div>
                                 <div>
-                                        <h3 class="text-orange-400 font-semibold mb-2">Hardware & Platform Integration
-                                        </h3>
+                                        <h3 class="text-orange-400 font-semibold mb-2">Other Expertise</h3>
                                         <p>
-                                                <span class="skill-tag">NFC</span> <span
-                                                        class="skill-tag">Sensors</span> <span
-                                                        class="skill-tag">National ID Reading</span>
-                                                <span class="skill-tag">BLE (Estimote SDK)</span> <span
-                                                        class="skill-tag">ML Kit</span> <span class="skill-tag">iOS
-                                                        Vision</span>
-                                                <span class="skill-tag">Firestore</span> <span class="skill-tag">Grabba
-                                                        Devices</span>
-                                                <span class="skill-tag">Google Enterprise PlayStore</span> <span
-                                                        class="skill-tag">Citrix Managed App Store</span>
+                                                <span class="skill-tag">NFC Integration</span> <span
+                                                        class="skill-tag">National ID Integration</span>
+                                                <span class="skill-tag">Biometric Authentication</span> <span
+                                                        class="skill-tag">Bluetooth LE</span>
+                                                <span class="skill-tag">QR/Barcode Scanning</span> <span
+                                                        class="skill-tag">Google Maps API</span>
+                                                <span class="skill-tag">Payment Gateways</span>
                                         </p>
                                 </div>
                         </div>
                 </section>
-                <section class="mb-10" data-aos="fade-up" data-aos-delay="300">
-                        <h2 class="pastel-heading mb-6"><i class="fas fa-briefcase pastel-accent"></i> Experience</h2>
-                        <div class="space-y-8">
-                                <article class="p-6 pastel-section rounded-lg shadow-md" data-aos="fade-left">
-                                        <div class="timeline-item has-sub-items">
-                                                <div class="timeline-icon"><i class="fas fa-building-shield"></i></div>
-                                                <h3 class="text-orange-400">Dubai Police HQ</h3>
-                                                <h4 class="text-gray-500">Dubai, United Arab Emirates | Dec 2015 -
-                                                        Present</h4>
-                                                <div class="timeline-sub-item">
-                                                        <h5 class="pastel-heading">System Development Senior Specialist
-                                                        </h5>
-                                                        <p class="sub-role-dates">Dec 2024 - Present</p>
-                                                        <ul
-                                                                class="list-disc list-inside space-y-1 text-sm list-text-light-mode mb-4">
-                                                                <li>Continuing leadership in mobile application
-                                                                        development and KMP strategies.</li>
-                                                                <li>Focusing on advanced mobile product development and
-                                                                        platform enhancements.</li>
-                                                        </ul>
-                                                </div>
-                                                <div class="timeline-sub-item">
-                                                        <h5 class="pastel-heading">Systems Development Specialist</h5>
-                                                        <p class="sub-role-dates">Dec 2022 - Dec 2024 (2 yrs 1 mo)</p>
-                                                        <ul
-                                                                class="list-disc list-inside space-y-1 text-sm list-text-light-mode mb-4">
-                                                                <li>Spearheaded development and deployment of internal
-                                                                        applications, improving efficiency.</li>
-                                                                <li>Pioneered Kotlin Multiplatform (KMP) adoption in
-                                                                        system architecture for cross-platform savings.
-                                                                </li>
-                                                                <li>Designed and implemented robust data access and
-                                                                        interface security measures.</li>
-                                                                <li>Integrated KMP modules for shared business logic and
-                                                                        platform-specific UI (Compose/SwiftUI).</li>
-                                                        </ul>
-                                                </div>
-                                                <div class="timeline-sub-item">
-                                                        <h5 class="pastel-heading">Senior Mobile Application Developer
-                                                                (iOS and Android)</h5>
-                                                        <p class="sub-role-dates">Dec 2015 - Dec 2022 (7 yrs 1 mo)</p>
-                                                        <ul
-                                                                class="list-disc list-inside space-y-1 text-sm list-text-light-mode mb-4">
-                                                                <li>Initiated and led projects streamlining manual
-                                                                        processes with mobile apps.</li>
-                                                                <li>Implemented user identification via National ID
-                                                                        reading technology.</li>
-                                                                <li>Integrated NFC and sensor-based technologies for
-                                                                        innovative solutions.</li>
-                                                                <li>Developed and maintained core functionalities for
-                                                                        numerous Dubai Police mobile applications.</li>
-                                                        </ul>
-                                                </div>
-                                                <p class="font-medium mt-4 mb-2 key-project-label">Key Projects at Dubai
-                                                        Police:</p>
-                                                <ul
-                                                        class="list-disc list-inside space-y-1 text-sm list-text-light-mode">
-                                                        <li>KMP Project (Shared UI - Compose/SwiftUI): Android, iOS,
-                                                                Desktop app using MRZ/Camera (ML Kit, iOS Vision) for ID
-                                                                details.</li>
-                                                        <li>KMP Project (Shared UI - Compose/SwiftUI): App with
-                                                                Firestore (GitLiveApp) for VIP check-in monitoring.</li>
-                                                        <li>Development of shared KMP and platform-specific modules for
-                                                                various Dubai Police apps.</li>
-                                                </ul>
-                                        </div>
-                                </article>
-                                <article class="p-6 pastel-section rounded-lg shadow-md" data-aos="fade-left"
-                                        data-aos-delay="100">
-                                        <div class="timeline-item has-sub-items">
-                                                <div class="timeline-icon"><i class="fas fa-globe-europe"></i></div>
-                                                <h3 class="text-orange-400">R2 International</h3>
-                                                <h4 class="text-gray-500">Aug 2011 - Nov 2015 (4 yrs 4 mos)</h4>
-                                                <div class="timeline-sub-item">
-                                                        <h5 class="pastel-heading">Lead Software Engineer</h5>
-                                                        <p class="sub-role-dates">Approx. 2014 - Nov 2015</p>
-                                                        <ul
-                                                                class="list-disc list-inside space-y-1 text-sm list-text-light-mode mb-4">
-                                                                <li>Led mobile app development (Android/iOS) for
-                                                                        European clients (Sweden, Finland).</li>
-                                                                <li>Managed mobile development team, overseeing feature
-                                                                        development, updates, and releases.</li>
-                                                                <li>Ensured effective stakeholder communication and
-                                                                        project reporting.</li>
-                                                                <li>Oversaw testing, reporting, and bug fixing
-                                                                        processes.</li>
-                                                        </ul>
-                                                </div>
-                                                <div class="timeline-sub-item">
-                                                        <h5 class="pastel-heading">Senior Software Engineer</h5>
-                                                        <p class="sub-role-dates">Approx. 2012 - 2014</p>
-                                                        <ul
-                                                                class="list-disc list-inside space-y-1 text-sm list-text-light-mode mb-4">
-                                                                <li>Developed and maintained features for key client
-                                                                        applications.</li>
-                                                                <li>Contributed to architectural decisions and code
-                                                                        reviews.</li>
-                                                                <li>Mentored junior engineers.</li>
-                                                        </ul>
-                                                </div>
-                                                <div class="timeline-sub-item">
-                                                        <h5 class="pastel-heading">Software Engineer</h5>
-                                                        <p class="sub-role-dates">Aug 2011 - Approx. 2012</p>
-                                                        <ul
-                                                                class="list-disc list-inside space-y-1 text-sm list-text-light-mode mb-4">
-                                                                <li>Developed features for Android and iOS applications.
-                                                                </li>
-                                                                <li>Participated in bug fixing and application
-                                                                        maintenance.</li>
-                                                                <li>Collaborated with team members on project tasks.
-                                                                </li>
-                                                        </ul>
-                                                </div>
-                                                <p class="font-medium mt-4 mb-2 key-project-label">Key Projects at R2
-                                                        International:</p>
-                                                <ul
-                                                        class="list-disc list-inside space-y-1 text-sm list-text-light-mode">
-                                                        <li>Developed Android/iOS apps for Sliplay (Swedish client).
-                                                        </li>
-                                                        <li>Created OPERAMeeting app for Innotiimi Digital Services &
-                                                                ICG (Finnish client).</li>
-                                                        <li>Developed BLE app prototype (Estimote SDK) for meeting space
-                                                                availability (Swedish client).</li>
-                                                </ul>
-                                        </div>
-                                </article>
+
+                <section class="mb-10 p-6 pastel-section rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="300">
+                        <h2 class="pastel-heading"><i class="fas fa-briefcase pastel-accent"></i> Work Experience</h2>
+
+                        <!-- Dubai Police - Principal Software Engineer -->
+                        <div class="timeline-item has-sub-items">
+                                <div class="timeline-icon">
+                                        <i class="fas fa-building"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold">Principal Software Engineer (Kotlin Multiplatform)
+                                </h3>
+                                <h4 class="text-base font-normal text-gray-400">Dubai Police GHQ (Contract)</h4>
+                                <p class="sub-role-dates">Jan 2021 – Present</p>
+                                <ul class="list-disc list-inside space-y-1 pl-4">
+                                        <li>Led KMP adoption for Android, iOS, and Desktop, achieving 40% code reuse.
+                                        </li>
+                                        <li>Developed 5+ critical internal applications (e.g., "Smart Inspection,"
+                                                "Patrol Monitoring")
+                                                for 10,000+ users, enhancing operational efficiency.</li>
+                                        <li>Integrated advanced features: NFC-based National ID scanning, biometric
+                                                authentication,
+                                                and real-time sensor data.</li>
+                                        <li>Mentored junior developers, fostering best practices in KMP and mobile
+                                                development.</li>
+                                </ul>
+
+                                <!-- Sub-item for previous role at Dubai Police -->
+                                <div class="timeline-sub-item">
+                                        <h5 class="font-semibold">Senior Android Developer</h5>
+                                        <h4 class="text-base font-normal text-gray-400">Dubai Police GHQ (Contract)
+                                        </h4>
+                                        <p class="sub-role-dates">Aug 2017 – Dec 2020</p>
+                                        <ul class="list-disc list-inside space-y-1 pl-4">
+                                                <li>Designed and developed 10+ Android enterprise applications, reducing
+                                                        manual
+                                                        processes and improving data accuracy.</li>
+                                                <li>Implemented secure communication protocols and offline data
+                                                        synchronization.</li>
+                                                <li>Collaborated with cross-functional teams to define requirements and
+                                                        deliver high-quality solutions.</li>
+                                        </ul>
+                                </div>
+                        </div>
+
+                        <!-- Emirates NBD - Senior Software Engineer -->
+                        <div class="timeline-item has-sub-items">
+                                <div class="timeline-icon">
+                                        <i class="fas fa-bank"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold">Senior Software Engineer (Android)</h3>
+                                <h4 class="text-base font-normal text-gray-400">Emirates NBD</h4>
+                                <p class="sub-role-dates">Apr 2015 – Jul 2017</p>
+                                <ul class="list-disc list-inside space-y-1 pl-4">
+                                        <li>Contributed to the development of the main Emirates NBD Mobile Banking
+                                                Application,
+                                                focusing on payment gateway integrations and UI/UX enhancements.</li>
+                                        <li>Participated in agile ceremonies, code reviews, and system design.</li>
+                                </ul>
+
+                                <div class="timeline-sub-item">
+                                        <h5 class="font-semibold">Software Engineer (Android)</h5>
+                                        <h4 class="text-base font-normal text-gray-400">Emirates NBD</h4>
+                                        <p class="sub-role-dates">Aug 2013 – Mar 2015</p>
+                                        <ul class="list-disc list-inside space-y-1 pl-4">
+                                                <li>Developed and maintained features for retail and corporate banking
+                                                        applications.</li>
+                                                <li>Assisted in optimizing app performance and troubleshooting issues.
+                                                </li>
+                                        </ul>
+                                </div>
+                        </div>
+
+                        <!-- HTC Global Services - Software Engineer -->
+                        <div class="timeline-item">
+                                <div class="timeline-icon">
+                                        <i class="fas fa-laptop-code"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold">Software Engineer (Android)</h3>
+                                <h4 class="text-base font-normal text-gray-400">HTC Global Services</h4>
+                                <p class="sub-role-dates">Aug 2011 – Jul 2013</p>
+                                <ul class="list-disc list-inside space-y-1 pl-4">
+                                        <li>Developed Android applications for various clients, including utility and
+                                                entertainment apps.</li>
+                                        <li>Gained foundational experience in Android SDK, Java, and mobile application
+                                                lifecycle.</li>
+                                </ul>
                         </div>
                 </section>
+
                 <section class="mb-10 p-6 pastel-section rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="400">
-                        <h2 class="pastel-heading"><i class="fas fa-award pastel-accent"></i> Honors and Awards</h2>
-                        <ul class="list-disc list-inside space-y-2 pl-4 text-sm list-text-light-mode">
-                                <li>Certificate of Appreciation for Performance (2024) - Nad Al Sheba Police Station,
-                                        Dubai Police</li>
-                                <li>Appreciation Certificate (2024) - Za'abeel Palace Administration and Dubai Police
-                                </li>
-                                <li>EXPO 2020 Dubai Medal (2022) - H.H. Mohammed bin Rashid Al Maktoum</li>
-                                <li>Employee Performance Award (2019) - Dubai Police</li>
-                                <li>Excellence and Outstanding Performance Award (2018) - Za'abeel Office for H.H.
-                                        Sheikh Mohammed bin Rashid Al Maktoum</li>
-                                <li>Appreciation Certificate for Exemplary Performance (2017) - Government of Dubai,
-                                        Dubai Police</li>
+                        <h2 class="pastel-heading"><i class="fas fa-graduation-cap pastel-accent"></i> Education</h2>
+                        <div class="timeline-item">
+                                <div class="timeline-icon">
+                                        <i class="fas fa-university"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold">Master of Science in Software Engineering</h3>
+                                <h4 class="text-base font-normal text-gray-400">Anna University</h4>
+                                <p class="degree-details-light-mode">2011</p>
+                        </div>
+                        <div class="timeline-item">
+                                <div class="timeline-icon">
+                                        <i class="fas fa-university"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold">Bachelor of Engineering in Computer Science</h3>
+                                <h4 class="text-base font-normal text-gray-400">Anna University</h4>
+                                <p class="degree-details-light-mode">2009</p>
+                        </div>
+                </section>
+
+                <section class="p-6 pastel-section rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="500">
+                        <h2 class="pastel-heading"><i class="fas fa-heart pastel-accent"></i> Personal Interests</h2>
+                        <ul class="list-disc list-inside space-y-2 pl-4">
+                                <li>Exploring new Kotlin Multiplatform technologies and contributing to open-source
+                                        projects.</li>
+                                <li>Following the latest trends in mobile UI/UX design and accessibility.</li>
+                                <li>Hiking and exploring nature trails in the UAE.</li>
+                                <li>Photography, particularly landscape and astrophotography.</li>
                         </ul>
                 </section>
-                <section class="p-6 pastel-section rounded-lg shadow-md mb-12" data-aos="fade-up" data-aos-delay="500">
-                        <h2 class="pastel-heading"><i class="fas fa-user-graduate pastel-accent"></i> Education</h2>
-                        <div class="space-y-4">
-                                <div class="timeline-item">
-                                        <div class="timeline-icon"><i class="fas fa-graduation-cap"></i></div>
-                                        <h3 class="text-orange-400">Master of Computer Application (MCA)</h3>
-                                        <p class="degree-details-light-mode">Bangalore University, Karnataka, India
-                                                (2011)</p>
-                                </div>
-                                <div class="timeline-item">
-                                        <div class="timeline-icon"><i class="fas fa-graduation-cap"></i></div>
-                                        <h3 class="text-orange-400">Bachelors in Science (Electronics and Computer
-                                                Maintenance)</h3>
-                                        <p class="degree-details-light-mode">RDVV University, Madhya Pradesh, India
-                                                (2008)</p>
-                                </div>
-                        </div>
-                </section>
+
+                <footer class="text-center mt-12 text-gray-400 text-sm" data-aos="fade-up">
+                        <p>&copy; 2024 Deepak Samuel Rajan. All rights reserved.</p>
+                </footer>
         </div>
-        <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
         <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
         <script src="scripts.js"></script>
-        <script>
-                (function () {
-                        function c() {
-                                var b = a.contentDocument || a.contentWindow.document;
-                                if (b) {
-                                        var d = b.createElement('script');
-                                        d.innerHTML = "window.__CF$cv$params={r:'93903655ab33bfdb',t:'MTc0NjExMjI5NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
-                                        b.getElementsByTagName('head')[0].appendChild(d);
-                                }
-                        }
-                        if (document.body) {
-                                var a = document.createElement('iframe');
-                                a.height = 1;
-                                a.width = 1;
-                                a.style.position = 'absolute';
-                                a.style.top = 0;
-                                a.style.left = 0;
-                                a.style.border = 'none';
-                                a.style.visibility = 'hidden';
-                                document.body.appendChild(a);
-                                if ('loading' !== document.readyState) c();
-                                else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c);
-                                else {
-                                        var e = document.onreadystatechange || function () { };
-                                        document.onreadystatechange = function (b) {
-                                                e(b);
-                                                'loading' !== document.readyState && (document.onreadystatechange = e, c());
-                                        }
-                                }
-                        }
-                })();
-        </script>
-        <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'9390985bed72ad9e',t:'MTc0NjExNjMxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
 </body>
 
 </html>
