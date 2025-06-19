@@ -1,575 +1,10 @@
 /* Custom Properties for Black & White Liquid Glass Theme (iOS 26 Inspired) */
 :root {
-    /* Main Theme Colors - Monochrome */
-    --color-bg-primary: #0A0A0A;
-    /* Deepest black for main background */
-    --color-bg-secondary: #1C1C1E;
-    /* Dark gray for subtle depth */
-    --color-text-primary: #E0E0E0;
-    /* Light gray for main text on dark */
-    --color-text-secondary: #B0B0B0;
-    /* Mid-gray for secondary text */
-    --color-text-highlight: #FFFFFF;
-    /* Pure white for strong emphasis */
-
-    /* Liquid Glass Colors (Dark Mode) */
-    --color-glass-bg: rgba(255, 255, 255, 0.03);
-    /* More subtle transparency for glass, closer to image */
-    --color-glass-border: rgba(255, 255, 255, 0.15);
-    /* Thin, subtle border, more defined */
-    --color-glass-shadow: rgba(0, 0, 0, 0.6);
-    /* Deeper, more diffused shadow */
-    --color-glass-shadow-hover: rgba(0, 0, 0, 0.8);
-    /* Even deeper on hover */
-    --blur-intensity: 25px;
-    /* Increased blur for stronger glass effect */
-
-
-    /* General Design Tokens */
-    --border-radius-xl: 32px;
-    /* Even larger, smoother rounded corners for panels */
-    --border-radius-lg: 16px;
-    /* For buttons/inner elements */
-    --transition-duration-fast: 0.2s;
-    --transition-duration-medium: 0.3s;
-    --transition-duration-slow: 0.4s;
-    /* iOS-like spring easing function: cubic-bezier(0.34, 1.56, 0.64, 1) or cubic-bezier(0.17, 0.67, 0.47, 1.42) */
-    --spring-ease: cubic-bezier(0.17, 0.67, 0.47, 1.42);
-    /* For subtle bounce/overshoot */
-    --standard-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
-    /* For regular, smooth animations */
-
-    /* Font stack prioritizing system UI font, similar to SF Pro */
-    --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-}
-
-/* Base Styles */
-html,
-body {
-    font-family: var(--font-system);
-    /* Use system font stack */
-    background: linear-gradient(to bottom, var(--color-bg-primary), var(--color-bg-secondary));
-    /* Deep space gradient for overall background */
-    color: var(--color-text-primary);
-    letter-spacing: 0.01em;
-    /* Subtle letter spacing */
-    transition: background var(--transition-duration-slow) ease, color var(--transition-duration-slow) ease;
-    min-height: 100vh;
-    overflow-x: hidden;
-    position: relative;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-/* Panel Star Background Styles */
-.panel-star-background,
-.panel-star-background-header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    /* Behind content */
-    overflow: hidden;
-    /* Crucial to contain stars within the panel */
-    border-radius: inherit;
-    /* Inherit border-radius from parent panel */
-    background-color: transparent;
-    /* The actual panel will have the glass background */
-}
-
-/* Static Star Styles */
-.star {
-    position: absolute;
-    background-color: #ffffff;
-    border-radius: 50%;
-    box-shadow: 0 0 4px rgba(255, 255, 255, 0.7);
-    /* Subtle glow */
-    will-change: transform, opacity;
-}
-
-/* Twinkle animation for stars */
-@keyframes twinkle {
-
-    0%,
-    100% {
-        opacity: 0.2;
-    }
-
-    50% {
-        opacity: 1;
-    }
-}
-
-/* Star travel animation - moves stars from bottom to top (relative to parent) */
-@keyframes star-travel {
-    from {
-        transform: translateY(100%);
-        /* Start below the container */
-    }
-
-    to {
-        transform: translateY(-100%);
-        /* Move above the container */
-    }
-}
-
-
-/* Adjust main content padding to account for no fixed top bar */
-.max-w-5xl {
-    padding-top: 4rem;
-    /* Reduced top padding as there's no fixed bar */
-}
-
-/* Header Section - Contains profile, title, and now menu buttons */
-header {
-    position: sticky;
-    /* Make the header sticky for the "floating" effect */
-    top: 2rem;
-    /* Stick at 2rem from top */
-    z-index: 60;
-    margin-bottom: 2rem;
-    /* Reduced margin, part of fluid layout */
-    padding: 1.5rem;
-    /* Padding inside the header's own glass panel */
-    background-color: var(--color-glass-bg);
-    /* Apply liquid glass to header itself */
-    border: 1px solid var(--color-glass-border);
-    box-shadow: 0 10px 35px var(--color-glass-shadow);
-    /* More pronounced shadow */
-    backdrop-filter: blur(var(--blur-intensity));
-    -webkit-backdrop-filter: blur(var(--blur-intensity));
-    border-radius: var(--border-radius-xl);
-    display: flex;
-    /* Ensure flex layout for content within header */
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-    /* Spacing for elements inside header */
-    transform: translateZ(0);
-    /* For physics effects */
-    transition: transform var(--transition-duration-medium) var(--spring-ease),
-        box-shadow var(--transition-duration-medium) var(--spring-ease);
-}
-
-header:hover {
-    transform: scale(1.005) translateY(-8px);
-    /* More pronounced lift effect */
-    box-shadow: 0 15px 45px var(--color-glass-shadow-hover);
-    /* Deeper shadow on hover */
-}
-
-/* Profile Pic - Enhanced */
-img.border-teal-300 {
-    border: 4px solid rgba(255, 255, 255, 0.4);
-    /* Softer, glass-like border */
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), 0 0 8px rgba(255, 255, 255, 0.1);
-    /* More glow */
-    transition: border-color var(--transition-duration-medium) ease, box-shadow var(--transition-duration-medium) ease;
-}
-
-/* Main Heading */
-h1 {
-    color: var(--color-text-highlight);
-    /* Pure white for main name */
-    font-size: 3.5rem;
-    /* Larger, more impactful */
-    line-height: 1.1;
-    font-weight: 700;
-    /* Bolder */
-    margin-bottom: 0.5rem;
-    transition: color var(--transition-duration-medium) ease;
-}
-
-/* Job Title */
-p.text-teal-300 {
-    color: var(--color-text-secondary);
-    /* Subtler gray for job title */
-    font-size: 1.6rem;
-    /* Larger */
-    font-weight: 400;
-    /* Lighter weight */
-    margin-bottom: 1rem;
-    transition: color var(--transition-duration-medium) ease;
-}
-
-/* Contact Info */
-.contact-info {
-    flex-direction: row;
-    /* Always row for contact links */
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.75rem 2rem;
-    /* More space */
-    font-size: 0.95rem;
-    margin-top: 1rem;
-    margin-bottom: 0;
-    /* No mb here, header handles spacing */
-}
-
-.contact-info a {
-    color: var(--color-text-secondary);
-    /* Subtle link color */
-    text-decoration: none;
-    transition: color var(--transition-duration-fast) ease, transform var(--transition-duration-fast) var(--spring-ease);
-}
-
-.contact-info a:hover {
-    color: var(--color-text-highlight);
-    /* Highlight on hover */
-    transform: translateY(-2px);
-    /* Subtle lift */
-}
-
-.contact-info i {
-    color: var(--color-text-secondary);
-    /* Icons match link text */
-    font-size: 1.05rem;
-    transition: color var(--transition-duration-fast) ease;
-}
-
-
-/* Menu Buttons (Integrated into header) */
-.menu-controls {
-    display: flex;
-    justify-content: center;
-    /* Center buttons within header */
-    align-items: center;
-    gap: 1rem;
-    /* Spacing between buttons */
-    width: 100%;
-    /* Take full width of header */
-    padding-top: 1rem;
-    /* Space from contact info */
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    /* Separator line */
-    margin-top: 1.5rem;
-    /* Space from elements above */
-}
-
-.menu-button {
-    background-color: var(--color-glass-bg);
-    /* Glass background for button */
-    color: var(--color-text-primary);
-    font-family: var(--font-system);
-    font-weight: 500;
-    padding: 0.7rem 1.4rem;
-    /* Generous padding */
-    border: 1px solid var(--color-glass-border);
-    border-radius: var(--border-radius-lg);
-    /* Consistent rounded corners */
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    font-size: 0.95rem;
-    transition: color var(--transition-duration-fast) ease, background-color var(--transition-duration-fast) ease, border-color var(--transition-duration-fast) ease, transform var(--transition-duration-fast) var(--spring-ease), box-shadow var(--transition-duration-fast) ease;
-    cursor: pointer;
-    box-shadow: 0 4px 10px var(--color-glass-shadow);
-    /* Subtle button shadow */
-}
-
-.menu-button:hover {
-    background-color: rgba(255, 255, 255, 0.12);
-    /* More opaque on hover */
-    color: var(--color-text-highlight);
-    border-color: rgba(255, 255, 255, 0.25);
-    transform: translateY(-3px);
-    /* Pronounced lift */
-    box-shadow: 0 6px 15px var(--color-glass-shadow-hover);
-}
-
-.menu-button i {
-    font-size: 1.2rem;
-    /* Larger icon */
-    color: inherit;
-}
-
-
-/* Section Styles (Glass Panels) - Major overhaul */
-.mb-10 {
-    margin-bottom: 2rem;
-    /* Consistent spacing */
-}
-
-.p-6 {
-    padding: 2rem;
-    /* More generous padding inside panels */
-}
-
-.pastel-section {
-    position: relative;
-    /* Needed for absolute positioning of .panel-star-background */
-    background-color: var(--color-glass-bg);
-    border: 1px solid var(--color-glass-border);
-    box-shadow: 0 10px 35px var(--color-glass-shadow);
-    /* More pronounced shadow */
-    backdrop-filter: blur(var(--blur-intensity));
-    -webkit-backdrop-filter: blur(var(--blur-intensity));
-    border-radius: var(--border-radius-xl);
-    /* Large, smooth rounded corners */
-    transition: background-color var(--transition-duration-medium) ease,
-        border-color var(--transition-duration-medium) ease,
-        box-shadow var(--transition-duration-medium) ease,
-        transform var(--transition-duration-medium) var(--spring-ease);
-    /* Physics on transform */
-    will-change: transform, opacity;
-    /* For scroll and hover effects */
-    overflow: hidden;
-    /* Crucial to contain the stars */
-}
-
-/* Physics to elevate glass panels on hover */
-.pastel-section:hover {
-    transform: scale(1.005) translateY(-8px);
-    /* More pronounced lift and slight scale */
-    box-shadow: 0 15px 45px var(--color-glass-shadow-hover);
-    /* Deeper shadow on hover */
-    border-color: rgba(255, 255, 255, 0.35);
-    /* More prominent border on hover */
-}
-
-/* Headings within sections */
-.pastel-heading {
-    display: flex;
-    /* Use flexbox for alignment */
-    align-items: center;
-    /* Vertically align items in the middle */
-    gap: 0.75rem;
-    /* Space between icon and text */
-    font-size: 1.8rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    color: var(--color-text-primary);
-    transition: color var(--transition-duration-medium) ease;
-    position: relative;
-    /* Ensure text is above stars */
-    z-index: 1;
-    /* Ensure text is above stars */
-}
-
-.pastel-heading i {
-    font-size: 1.5rem;
-    /* Larger icons in headings */
-    color: var(--color-text-secondary);
-    /* Subtle color for icons */
-    transition: color var(--transition-duration-medium) ease;
-}
-
-h3 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--color-text-primary);
-    margin-bottom: 0.25rem;
-    transition: color var(--transition-duration-medium) ease;
-    position: relative;
-    /* Ensure text is above stars */
-    z-index: 1;
-    /* Ensure text is above stars */
-}
-
-h4 {
-    font-size: 1rem;
-    font-weight: 400;
-    color: var(--color-text-secondary);
-    margin-bottom: 0.75rem;
-    transition: color var(--transition-duration-medium) ease;
-    position: relative;
-    /* Ensure text is above stars */
-    z-index: 1;
-    /* Ensure text is above stars */
-}
-
-h5 {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: var(--color-text-primary);
-    margin-bottom: 0.1rem;
-    transition: color var(--transition-duration-medium) ease;
-    position: relative;
-    /* Ensure text is above stars */
-    z-index: 1;
-    /* Ensure text is above stars */
-}
-
-/* Body Text within sections */
-p.text-base,
-ul.list-text-light-mode li {
-    font-size: 1rem;
-    line-height: 1.6;
-    color: var(--color-text-primary);
-    transition: color var(--transition-duration-medium) ease;
-    position: relative;
-    /* Ensure text is above stars */
-    z-index: 1;
-    /* Ensure text is above stars */
-}
-
-.sub-role-dates,
-.degree-details-light-mode,
-.key-project-label {
-    color: var(--color-text-secondary);
-    transition: color var(--transition-duration-medium) ease;
-    position: relative;
-    /* Ensure text is above stars */
-    z-index: 1;
-    /* Ensure text is above stars */
-}
-
-/* Skill Tags - More refined */
-.skill-tag {
-    background-color: rgba(255, 255, 255, 0.08);
-    /* Subtle glass-like background */
-    color: var(--color-text-secondary);
-    /* Text color */
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 0.3rem 0.9rem;
-    /* Refined padding */
-    border-radius: 8px;
-    /* Softer rounded corners */
-    font-size: 0.85rem;
-    /* Slightly smaller text */
-    font-weight: 500;
-    display: inline-block;
-    margin: 0.2rem;
-    /* Tighter spacing */
-    transition: transform var(--transition-duration-fast) var(--spring-ease),
-        background-color var(--transition-duration-fast) ease,
-        border-color var(--transition-duration-fast) ease,
-        color var(--transition-duration-fast) ease;
-    position: relative;
-    /* Ensure text is above stars */
-    z-index: 1;
-    /* Ensure text is above stars */
-}
-
-.skill-tag:hover {
-    transform: translateY(-4px);
-    /* More pronounced lift */
-    background-color: rgba(255, 255, 255, 0.15);
-    /* More opaque on hover */
-    border-color: rgba(255, 255, 255, 0.2);
-    color: var(--color-text-highlight);
-}
-
-/* Timeline Styling - Enhanced visual hierarchy and glass feel */
-.timeline-item {
-    position: relative;
-    padding-left: 3rem;
-    /* More space for icon */
-    padding-bottom: 2rem;
-    /* More spacing between items */
-    transition: border-left-color var(--transition-duration-medium) ease;
-    z-index: 1;
-    /* Ensure text is above stars */
-}
-
-.timeline-item.has-sub-items {
-    border-left: 2px solid rgba(255, 255, 255, 0.1);
-    /* Subtle vertical line */
-}
-
-.timeline-item:hover {
-    border-left-color: rgba(255, 255, 255, 0.3);
-    /* Slightly more prominent on hover */
-}
-
-.timeline-item:last-child {
-    border-left-color: transparent;
-    padding-bottom: 0;
-}
-
-.timeline-sub-item {
-    position: relative;
-    /* Needed for ::before pseudo-element */
-    padding-left: 1.8rem;
-    /* More space for sub-item dot */
-    padding-top: 0.75rem;
-    padding-bottom: 1.25rem;
-    border-left: 2px dotted rgba(255, 255, 255, 0.08);
-    /* Dotted line for sub-items */
-    margin-left: -1.3rem;
-    /* Align with parent line */
-    margin-top: 1rem;
-    transition: border-left-color var(--transition-duration-medium) ease;
-    z-index: 1;
-    /* Ensure text is above stars */
-}
-
-.timeline-sub-item:hover {
-    border-left-color: rgba(255, 255, 255, 0.15);
-}
-
-.timeline-sub-item:last-child {
-    padding-bottom: 0;
-    border-left-color: transparent;
-}
-
-.timeline-sub-item::before {
-    content: '';
-    position: absolute;
-    left: -0.5rem;
-    /* Position dot on line */
-    top: 1rem;
-    width: 0.7rem;
-    /* Larger dot */
-    height: 0.7rem;
-    background-color: var(--color-text-secondary);
-    /* Dot color */
-    border-radius: 50%;
-    z-index: 1;
-    box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
-    /* Subtle dot glow */
-    transition: background-color var(--transition-duration-fast) ease, box-shadow var(--transition-duration-fast) ease;
-}
-
-.timeline-icon {
-    position: absolute;
-    left: -1rem;
-    /* Position icon on line */
-    top: -0.2rem;
-    background-color: var(--color-glass-bg);
-    /* Glass background for icon */
-    border: 1px solid var(--color-glass-border);
-    border-radius: 50%;
-    padding: 0.4rem;
-    /* More padding */
-    color: var(--color-text-highlight);
-    /* Highlight icon */
-    width: 2.5rem;
-    /* Larger icon container */
-    height: 2.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2;
-    box-shadow: 0 4px 8px var(--color-glass-shadow);
-    /* More prominent shadow */
-    transition: background-color var(--transition-duration-fast) ease,
-        border-color var(--transition-duration-fast) ease,
-        color var(--transition-duration-fast) ease,
-        box-shadow var(--transition-duration-fast) ease,
-        transform var(--transition-duration-fast) var(--spring-ease);
-}
-
-.timeline-icon:hover {
-    background-color: rgba(255, 255, 255, 0.12);
-    /* Slightly more opaque */
-    color: var(--color-text-highlight);
-    transform: scale(1.05);
-    /* Subtle scale on hover */
-    box-shadow: 0 6px 12px var(--color-glass-shadow-hover);
-}
-
-.timeline-icon i {
-    font-size: 1.2rem;
-}/* Custom Properties for Black & White Liquid Glass Theme (iOS 26 Inspired) */
-:root {
-    /* Main Theme Colors - Monochrome */
-    --color-bg-primary: #0A0A0A;
-    /* Deepest black for main background */
-    --color-bg-secondary: #1C1C1E;
-    /* Dark gray for subtle depth */
+    /* Main Theme Colors - Monochrome (Darkened for Deep Space) */
+    --color-bg-primary: #020204;
+    /* Near black with a hint of blue */
+    --color-bg-secondary: #08080C;
+    /* Dark gray with a hint of purple */
     --color-text-primary: #E0E0E0;
     /* Light gray for main text on dark */
     --color-text-secondary: #B0B0B0;
@@ -598,7 +33,7 @@ ul.list-text-light-mode li {
     --transition-duration-fast: 0.2s;
     --transition-duration-medium: 0.3s;
     --transition-duration-slow: 0.4s;
-    /* iOS-like spring easing function: cubic-bezier(0.34, 1.56, 0.64, 1) or cubic-bezier(0.17, 0.67, 0.47, 1.42) */
+    /* iOS-like spring easing function */
     --spring-ease: cubic-bezier(0.17, 0.67, 0.47, 1.42);
     /* For subtle bounce/overshoot */
     --standard-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -614,7 +49,6 @@ body {
     font-family: var(--font-system);
     /* Use system font stack */
     background: linear-gradient(to bottom, var(--color-bg-primary), var(--color-bg-secondary));
-    /* Deep space gradient for overall background */
     color: var(--color-text-primary);
     letter-spacing: 0.01em;
     /* Subtle letter spacing */
@@ -626,73 +60,27 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Global Stargaze Background Styles */
-#stargaze-background {
+/* New Canvas for Space Background */
+#space-canvas {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1;
-    /* Behind all content */
-    pointer-events: none;
-    /* Allows clicks to pass through */
+    z-index: 0;
     background: transparent;
-    /* Main body handles the gradient */
-    overflow: hidden;
-    /* Hide stars when they move off-screen */
 }
 
-/* Static Star Styles */
-.star {
-    position: absolute;
-    background-color: #ffffff;
-    border-radius: 50%;
-    box-shadow: 0 0 4px rgba(255, 255, 255, 0.7);
-    /* Subtle glow */
-    will-change: transform, opacity;
+.main-content {
+    position: relative;
+    z-index: 1;
+    /* Ensure content is above the canvas */
 }
 
-/* Twinkle animation for stars */
-@keyframes twinkle {
-
-    0%,
-    100% {
-        opacity: 0.2;
-    }
-
-    50% {
-        opacity: 1;
-    }
-}
-
-/* Star travel animation - moves stars from top to bottom of the viewport, loops seamlessly */
-@keyframes star-travel {
-    from {
-        transform: translateY(0vh);
-        /* Start at the top */
-    }
-
-    to {
-        transform: translateY(100vh);
-        /* Move down the entire viewport height */
-    }
-}
-
-/* Shooting Star Styles */
-.shooting-star {
-    position: absolute;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
-    border-radius: 50%;
-    /* Make it rounded for a softer look */
-    pointer-events: none;
-    will-change: transform, opacity;
-}
 
 /* Adjust main content padding to account for no fixed top bar */
 .max-w-5xl {
     padding-top: 4rem;
-    /* Reduced top padding as there's no fixed bar */
 }
 
 /* Header Section - Contains profile, title, and now menu buttons */
@@ -704,7 +92,7 @@ header {
     padding: 1.5rem;
     background-color: var(--color-glass-bg);
     border: 1px solid var(--color-glass-border);
-    box-shadow: 0 8px 30px var(--color-glass-shadow);
+    box-shadow: 0 10px 35px var(--color-glass-shadow);
     backdrop-filter: blur(var(--blur-intensity));
     -webkit-backdrop-filter: blur(var(--blur-intensity));
     border-radius: var(--border-radius-xl);
@@ -716,9 +104,7 @@ header {
     transition: transform var(--transition-duration-medium) var(--spring-ease),
         box-shadow var(--transition-duration-medium) var(--spring-ease),
         border-color var(--transition-duration-medium) ease;
-    /* Add border transition */
     overflow: hidden;
-    /* Needed for pseudo-element highlight */
 }
 
 header::before {
@@ -726,9 +112,7 @@ header::before {
     position: absolute;
     top: 0;
     left: -100%;
-    /* Start off-screen to the left */
     width: 200%;
-    /* Wide enough to cover cross-movement */
     height: 100%;
     background: linear-gradient(to right,
             rgba(255, 255, 255, 0) 0%,
@@ -738,25 +122,19 @@ header::before {
             rgba(255, 255, 255, 0.05) 70%,
             rgba(255, 255, 255, 0) 100%);
     opacity: 0;
-    /* Hidden by default */
     transition: all var(--transition-duration-slow) var(--standard-ease);
-    /* Smooth transition */
     pointer-events: none;
-    /* Allow clicks to pass through */
     z-index: 1;
-    /* Ensure highlight is above background but below text */
 }
 
 header:hover {
-    transform: scale(1.005) translateY(-5px);
-    box-shadow: 0 12px 40px var(--color-glass-shadow-hover);
-    border-color: rgba(255, 255, 255, 0.3);
-    /* More prominent border on hover */
+    transform: scale(1.005) translateY(-8px);
+    box-shadow: 0 15px 45px var(--color-glass-shadow-hover);
+    border-color: rgba(255, 255, 255, 0.35);
 }
 
 header:hover::before {
     left: 0%;
-    /* Move highlight across */
     opacity: 1;
 }
 
@@ -776,7 +154,6 @@ h1 {
     margin-bottom: 0.5rem;
     transition: color var(--transition-duration-medium) ease;
     position: relative;
-    /* Ensure text is above pseudo-element */
     z-index: 2;
 }
 
@@ -788,7 +165,6 @@ p.text-teal-300 {
     margin-bottom: 1rem;
     transition: color var(--transition-duration-medium) ease;
     position: relative;
-    /* Ensure text is above pseudo-element */
     z-index: 2;
 }
 
@@ -808,7 +184,6 @@ p.text-teal-300 {
     text-decoration: none;
     transition: color var(--transition-duration-fast) ease, transform var(--transition-duration-fast) var(--spring-ease);
     position: relative;
-    /* Ensure text is above pseudo-element */
     z-index: 2;
 }
 
@@ -867,7 +242,7 @@ p.text-teal-300 {
 }
 
 
-/* Section Styles (Glass Panels) - Major overhaul */
+/* Section Styles (Glass Panels) */
 .mb-10 {
     margin-bottom: 2rem;
 }
@@ -880,7 +255,7 @@ p.text-teal-300 {
     position: relative;
     background-color: var(--color-glass-bg);
     border: 1px solid var(--color-glass-border);
-    box-shadow: 0 8px 30px var(--color-glass-shadow);
+    box-shadow: 0 10px 35px var(--color-glass-shadow);
     backdrop-filter: blur(var(--blur-intensity));
     -webkit-backdrop-filter: blur(var(--blur-intensity));
     border-radius: var(--border-radius-xl);
@@ -890,7 +265,6 @@ p.text-teal-300 {
         transform var(--transition-duration-medium) var(--spring-ease);
     will-change: transform, opacity;
     overflow: hidden;
-    /* Needed for pseudo-element highlight */
 }
 
 .pastel-section::before {
@@ -898,9 +272,7 @@ p.text-teal-300 {
     position: absolute;
     top: 0;
     left: -100%;
-    /* Start off-screen to the left */
     width: 200%;
-    /* Wide enough to cover cross-movement */
     height: 100%;
     background: linear-gradient(to right,
             rgba(255, 255, 255, 0) 0%,
@@ -910,26 +282,19 @@ p.text-teal-300 {
             rgba(255, 255, 255, 0.05) 70%,
             rgba(255, 255, 255, 0) 100%);
     opacity: 0;
-    /* Hidden by default */
     transition: all var(--transition-duration-slow) var(--standard-ease);
-    /* Smooth transition */
     pointer-events: none;
-    /* Allow clicks to pass through */
     z-index: 1;
-    /* Ensure highlight is above background but below text */
 }
 
-/* Physics to elevate glass panels on hover */
 .pastel-section:hover {
-    transform: scale(1.005) translateY(-5px);
-    box-shadow: 0 12px 40px var(--color-glass-shadow-hover);
-    border-color: rgba(255, 255, 255, 0.3);
-    /* More prominent border on hover */
+    transform: scale(1.005) translateY(-8px);
+    box-shadow: 0 15px 45px var(--color-glass-shadow-hover);
+    border-color: rgba(255, 255, 255, 0.35);
 }
 
 .pastel-section:hover::before {
     left: 0%;
-    /* Move highlight across */
     opacity: 1;
 }
 
@@ -944,7 +309,6 @@ p.text-teal-300 {
     color: var(--color-text-primary);
     transition: color var(--transition-duration-medium) ease;
     position: relative;
-    /* Ensure text is above pseudo-element */
     z-index: 2;
 }
 
@@ -961,7 +325,6 @@ h3 {
     margin-bottom: 0.25rem;
     transition: color var(--transition-duration-medium) ease;
     position: relative;
-    /* Ensure text is above pseudo-element */
     z-index: 2;
 }
 
@@ -972,7 +335,6 @@ h4 {
     margin-bottom: 0.75rem;
     transition: color var(--transition-duration-medium) ease;
     position: relative;
-    /* Ensure text is above pseudo-element */
     z-index: 2;
 }
 
@@ -983,7 +345,6 @@ h5 {
     margin-bottom: 0.1rem;
     transition: color var(--transition-duration-medium) ease;
     position: relative;
-    /* Ensure text is above pseudo-element */
     z-index: 2;
 }
 
@@ -995,7 +356,6 @@ ul.list-text-light-mode li {
     color: var(--color-text-primary);
     transition: color var(--transition-duration-medium) ease;
     position: relative;
-    /* Ensure text is above pseudo-element */
     z-index: 2;
 }
 
@@ -1005,7 +365,6 @@ ul.list-text-light-mode li {
     color: var(--color-text-secondary);
     transition: color var(--transition-duration-medium) ease;
     position: relative;
-    /* Ensure text is above pseudo-element */
     z-index: 2;
 }
 
@@ -1025,7 +384,6 @@ ul.list-text-light-mode li {
         border-color var(--transition-duration-fast) ease,
         color var(--transition-duration-fast) ease;
     position: relative;
-    /* Ensure text is above pseudo-element */
     z-index: 2;
 }
 
@@ -1043,7 +401,6 @@ ul.list-text-light-mode li {
     padding-bottom: 2rem;
     transition: border-left-color var(--transition-duration-medium) ease;
     z-index: 2;
-    /* Ensure text is above pseudo-element */
 }
 
 .timeline-item.has-sub-items {
@@ -1069,7 +426,6 @@ ul.list-text-light-mode li {
     margin-top: 1rem;
     transition: border-left-color var(--transition-duration-medium) ease;
     z-index: 2;
-    /* Ensure text is above pseudo-element */
 }
 
 .timeline-sub-item:hover {
