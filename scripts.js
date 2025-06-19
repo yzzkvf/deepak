@@ -318,13 +318,19 @@ function initWebGLSpace() {
     directionalLight.position.set(5, 3, 5);
     scene.add(directionalLight);
 
-    const starGeometry = createStarGeometry(15000);
-    const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.7 });
-    const starField1 = new THREE.Points(starGeometry, starMaterial);
+    const starMaterials = [
+        new THREE.PointsMaterial({ color: 0xffffff, size: 0.7 }),
+        new THREE.PointsMaterial({ color: 0xffffff, size: 0.7, map: createStarTexture(), blending: THREE.AdditiveBlending, transparent: true })
+    ];
+    const starField1 = new THREE.Points(createStarGeometry(15000), starMaterials[0]);
     const starField2 = starField1.clone();
+    const brightStarField1 = new THREE.Points(createStarGeometry(200), starMaterials[1]);
+    const brightStarField2 = brightStarField1.clone();
     starField1.position.z = 0;
     starField2.position.z = -2000;
-    scene.add(starField1, starField2);
+    brightStarField1.position.z = 0;
+    brightStarField2.position.z = -2000;
+    scene.add(starField1, starField2, brightStarField1, brightStarField2);
     
     let planets = [];
     let asteroids = [];
@@ -339,18 +345,18 @@ function initWebGLSpace() {
         const delta = clock.getDelta();
         const time = clock.getElapsedTime();
 
-        // ** GENTLE AUTOMATIC CAMERA PAN **
-        camera.position.x = Math.sin(time * 0.05) * 2;
-        camera.position.y = Math.sin(time * 0.03) * 1;
+        camera.position.x += Math.sin(time * 0.05) * 0.02;
+        camera.position.y += Math.cos(time * 0.04) * 0.02;
         camera.lookAt(0, 0, 0);
         
-        // ** SEAMLESS ENDLESS STARFIELD **
         starField1.position.z += delta * 100;
         starField2.position.z += delta * 100;
         if (starField1.position.z > 2000) starField1.position.z -= 4000;
         if (starField2.position.z > 2000) starField2.position.z -= 4000;
+        
+        brightStarField1.position.z = starField1.position.z;
+        brightStarField2.position.z = starField2.position.z;
 
-        // ** RARE, DYNAMIC OBJECT SPAWNING **
         if (time > lastSpawnTime.planet + SPAWN_INTERVAL.planet / 1000) {
             if (planets.length < 3) createAndAddPlanet();
             lastSpawnTime.planet = time;
@@ -364,7 +370,6 @@ function initWebGLSpace() {
             lastSpawnTime.constellation = time;
         }
         
-        // ** UPDATE AND CLEANUP DYNAMIC OBJECTS **
         [...planets, ...asteroids, ...constellations].forEach(obj => {
             obj.position.add(obj.userData.velocity);
             obj.rotation.y += obj.userData.rotationSpeed;
@@ -390,6 +395,20 @@ function initWebGLSpace() {
         const geometry = new THREE.BufferGeometry();
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
         return geometry;
+    }
+
+    function createStarTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64; canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+        const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gradient.addColorStop(0, 'rgba(255,255,255,1)');
+        gradient.addColorStop(0.2, 'rgba(255,255,255,0.7)');
+        gradient.addColorStop(0.4, 'rgba(255,255,255,0.2)');
+        gradient.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0,0,64,64);
+        return new THREE.CanvasTexture(canvas);
     }
 
     function createAndAddPlanet() {
@@ -498,19 +517,13 @@ function initWebGLSpace() {
     function createAndAddConstellation() {
         const group = new THREE.Group();
         const starCount = THREE.MathUtils.randInt(5, 10);
-        const points = [];
         const starMaterial = new THREE.MeshBasicMaterial({ color: 0x99ccff, emissive: 0x99ccff });
         for (let i = 0; i < starCount; i++) {
-            const starGeom = new THREE.SphereGeometry(0.5, 8, 8);
+            const starGeom = new THREE.SphereGeometry(Math.random() * 0.5 + 0.3, 8, 8);
             const star = new THREE.Mesh(starGeom, starMaterial);
             star.position.set(THREE.MathUtils.randFloatSpread(100), THREE.MathUtils.randFloatSpread(100), 0);
-            points.push(star.position);
             group.add(star);
         }
-        const lineMaterial = new THREE.LineBasicMaterial({ color: 0x99ccff, transparent: true, opacity: 0.2 });
-        const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-        const line = new THREE.Line(lineGeometry, lineMaterial);
-        group.add(line);
         resetObjectPosition(group);
         constellations.push(group);
         scene.add(group);
