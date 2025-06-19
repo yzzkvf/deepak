@@ -319,8 +319,8 @@ function initWebGLSpace() {
     scene.add(directionalLight);
 
     const starMaterials = [
-        new THREE.PointsMaterial({ color: 0xffffff, size: 0.7 }),
-        new THREE.PointsMaterial({ color: 0xffffff, size: 0.7, map: createStarTexture(), blending: THREE.AdditiveBlending, transparent: true })
+        new THREE.PointsMaterial({ color: 0xffffff, size: 0.7, opacity: 0.8, transparent: true }),
+        new THREE.PointsMaterial({ color: 0xffffff, size: 1.5, map: createStarTexture(), blending: THREE.AdditiveBlending, transparent: true, opacity: 0.5 })
     ];
     const starField1 = new THREE.Points(createStarGeometry(15000), starMaterials[0]);
     const starField2 = starField1.clone();
@@ -338,27 +338,30 @@ function initWebGLSpace() {
     
     const clock = new THREE.Clock();
     let lastSpawnTime = { planet: 0, asteroid: 0, constellation: 0 };
-    const SPAWN_INTERVAL = { planet: 20000, asteroid: 30000, constellation: 60000 };
+    const SPAWN_INTERVAL = { planet: 25000, asteroid: 35000, constellation: 70000 };
     
     function animate() {
         animationFrameId = requestAnimationFrame(animate);
         const delta = clock.getDelta();
         const time = clock.getElapsedTime();
 
-        camera.position.x += Math.sin(time * 0.05) * 0.02;
-        camera.position.y += Math.cos(time * 0.04) * 0.02;
+        // ** GENTLE, SMOOTH AUTOMATIC CAMERA PAN (ACCESSIBILITY FOCUSED) **
+        camera.position.x = Math.sin(time * 0.02) * 0.5;
+        camera.position.y = Math.cos(time * 0.015) * 0.5;
         camera.lookAt(0, 0, 0);
         
-        starField1.position.z += delta * 100;
-        starField2.position.z += delta * 100;
+        // ** SEAMLESS ENDLESS STARFIELD **
+        starField1.position.z += delta * 20; // Slower speed
+        starField2.position.z += delta * 20;
         if (starField1.position.z > 2000) starField1.position.z -= 4000;
         if (starField2.position.z > 2000) starField2.position.z -= 4000;
         
         brightStarField1.position.z = starField1.position.z;
         brightStarField2.position.z = starField2.position.z;
 
+        // ** RARE, DYNAMIC OBJECT SPAWNING **
         if (time > lastSpawnTime.planet + SPAWN_INTERVAL.planet / 1000) {
-            if (planets.length < 3) createAndAddPlanet();
+            if (planets.length < 2) createAndAddPlanet(); // Reduced max planets
             lastSpawnTime.planet = time;
         }
         if (time > lastSpawnTime.asteroid + SPAWN_INTERVAL.asteroid / 1000) {
@@ -370,6 +373,7 @@ function initWebGLSpace() {
             lastSpawnTime.constellation = time;
         }
         
+        // ** UPDATE AND CLEANUP DYNAMIC OBJECTS **
         [...planets, ...asteroids, ...constellations].forEach(obj => {
             obj.position.add(obj.userData.velocity);
             obj.rotation.y += obj.userData.rotationSpeed;
@@ -402,10 +406,10 @@ function initWebGLSpace() {
         canvas.width = 64; canvas.height = 64;
         const ctx = canvas.getContext('2d');
         const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-        gradient.addColorStop(0, 'rgba(255,255,255,1)');
-        gradient.addColorStop(0.2, 'rgba(255,255,255,0.7)');
-        gradient.addColorStop(0.4, 'rgba(255,255,255,0.2)');
-        gradient.addColorStop(1, 'rgba(255,255,255,0)');
+        gradient.addColorStop(0, 'rgba(255,255,255,0.8)');
+        gradient.addColorStop(0.2, 'rgba(255,255,255,0.5)');
+        gradient.addColorStop(0.4, 'rgba(200,220,255,0.2)');
+        gradient.addColorStop(1, 'rgba(200,220,255,0)');
         ctx.fillStyle = gradient;
         ctx.fillRect(0,0,64,64);
         return new THREE.CanvasTexture(canvas);
@@ -436,11 +440,13 @@ function initWebGLSpace() {
         const texture = new THREE.CanvasTexture(generateProceduralTexture('gas'));
         const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.9 });
         const planet = new THREE.Mesh(geometry, material);
-        const ringGeom = new THREE.RingGeometry(size * 1.2, size * 1.8, 64);
-        const ringMat = new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
-        const ring = new THREE.Mesh(ringGeom, ringMat);
-        ring.rotation.x = Math.random() * Math.PI;
-        planet.add(ring);
+        if (Math.random() > 0.5) {
+            const ringGeom = new THREE.RingGeometry(size * 1.2, size * 1.8, 64);
+            const ringMat = new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
+            const ring = new THREE.Mesh(ringGeom, ringMat);
+            ring.rotation.x = Math.random() * Math.PI;
+            planet.add(ring);
+        }
         return planet;
     }
     
@@ -517,7 +523,7 @@ function initWebGLSpace() {
     function createAndAddConstellation() {
         const group = new THREE.Group();
         const starCount = THREE.MathUtils.randInt(5, 10);
-        const starMaterial = new THREE.MeshBasicMaterial({ color: 0x99ccff, emissive: 0x99ccff });
+        const starMaterial = new THREE.MeshBasicMaterial({ color: 0x99ccff, emissive: 0x99ccff, transparent: true, opacity: 0.7 });
         for (let i = 0; i < starCount; i++) {
             const starGeom = new THREE.SphereGeometry(Math.random() * 0.5 + 0.3, 8, 8);
             const star = new THREE.Mesh(starGeom, starMaterial);
