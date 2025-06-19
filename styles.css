@@ -61,6 +61,12 @@ body {
     position: relative;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+    /* SECURITY: Disable text selection to make scraping harder */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 /* New Canvas for Space Background */
@@ -80,6 +86,14 @@ body {
     /* Ensure content is above the canvas */
 }
 
+/* SECURITY: Honeypot style to ensure it's completely hidden */
+.honeypot {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    opacity: 0;
+    pointer-events: none;
+}
 
 /* Adjust main content padding to account for no fixed top bar */
 .max-w-5xl {
@@ -88,7 +102,6 @@ body {
 
 /* Header Section - Contains profile, title, and now menu buttons */
 header {
-    /* CHANGED: position: sticky -> position: relative. This stops it from sticking to the top. */
     position: relative;
     z-index: 60;
     margin-bottom: 2rem;
@@ -182,17 +195,30 @@ p.text-teal-300 {
     margin-bottom: 0;
 }
 
-.contact-info a {
+.contact-info a,
+.contact-item {
     color: var(--color-text-secondary);
     text-decoration: none;
     transition: color var(--transition-duration-fast) ease, transform var(--transition-duration-fast) var(--spring-ease);
     position: relative;
     z-index: 2;
+    cursor: pointer;
 }
 
-.contact-info a:hover {
+.contact-info a:hover,
+.contact-item:hover {
     color: var(--color-text-highlight);
     transform: translateY(-2px);
+}
+
+/* Style for the blurred placeholder text */
+.contact-placeholder {
+    filter: blur(4px);
+    transition: filter 0.3s ease;
+}
+
+.contact-item:hover .contact-placeholder {
+    filter: blur(0);
 }
 
 .contact-info i {
@@ -353,7 +379,7 @@ h5 {
 
 /* Body Text within sections */
 p.text-base,
-ul.list-text-light-mode li {
+ul.list-disc li {
     font-size: 1rem;
     line-height: 1.6;
     color: var(--color-text-primary);
@@ -363,12 +389,13 @@ ul.list-text-light-mode li {
 }
 
 .sub-role-dates,
-.degree-details-light-mode,
-.key-project-label {
+.degree-details-light-mode {
     color: var(--color-text-secondary);
     transition: color var(--transition-duration-medium) ease;
     position: relative;
     z-index: 2;
+    font-size: 0.9rem;
+    /* Slightly smaller for dates */
 }
 
 /* Skill Tags - More refined */
@@ -401,17 +428,11 @@ ul.list-text-light-mode li {
 .timeline-item {
     position: relative;
     padding-left: 3rem;
-    padding-bottom: 2rem;
+    padding-bottom: 2.5rem;
+    /* Increased spacing */
+    border-left: 2px solid rgba(255, 255, 255, 0.1);
     transition: border-left-color var(--transition-duration-medium) ease;
     z-index: 2;
-}
-
-.timeline-item.has-sub-items {
-    border-left: 2px solid rgba(255, 255, 255, 0.1);
-}
-
-.timeline-item:hover {
-    border-left-color: rgba(255, 255, 255, 0.3);
 }
 
 .timeline-item:last-child {
@@ -419,40 +440,6 @@ ul.list-text-light-mode li {
     padding-bottom: 0;
 }
 
-.timeline-sub-item {
-    position: relative;
-    padding-left: 1.8rem;
-    padding-top: 0.75rem;
-    padding-bottom: 1.25rem;
-    border-left: 2px dotted rgba(255, 255, 255, 0.08);
-    margin-left: -1.3rem;
-    margin-top: 1rem;
-    transition: border-left-color var(--transition-duration-medium) ease;
-    z-index: 2;
-}
-
-.timeline-sub-item:hover {
-    border-left-color: rgba(255, 255, 255, 0.15);
-}
-
-.timeline-sub-item:last-child {
-    padding-bottom: 0;
-    border-left-color: transparent;
-}
-
-.timeline-sub-item::before {
-    content: '';
-    position: absolute;
-    left: -0.5rem;
-    top: 1rem;
-    width: 0.7rem;
-    height: 0.7rem;
-    background-color: var(--color-text-secondary);
-    border-radius: 50%;
-    z-index: 1;
-    box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
-    transition: background-color var(--transition-duration-fast) ease, box-shadow var(--transition-duration-fast) ease;
-}
 
 .timeline-icon {
     position: absolute;
@@ -463,8 +450,10 @@ ul.list-text-light-mode li {
     border-radius: 50%;
     padding: 0.4rem;
     color: var(--color-text-highlight);
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 2rem;
+    /* Slightly smaller */
+    height: 2rem;
+    /* Slightly smaller */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -477,7 +466,7 @@ ul.list-text-light-mode li {
         transform var(--transition-duration-fast) var(--spring-ease);
 }
 
-.timeline-icon:hover {
+.timeline-item:hover .timeline-icon {
     background-color: rgba(255, 255, 255, 0.12);
     color: var(--color-text-highlight);
     transform: scale(1.05);
@@ -485,5 +474,6 @@ ul.list-text-light-mode li {
 }
 
 .timeline-icon i {
-    font-size: 1.2rem;
+    font-size: 1rem;
+    /* Slightly smaller */
 }

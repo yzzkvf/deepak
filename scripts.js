@@ -6,7 +6,7 @@ AOS.init({
     easing: 'ease-out-cubic',
 });
 
-// --- Page Content Functions ---
+// --- Page Content & Security Functions ---
 
 /**
  * Calculates the number of years from a start date to the current date
@@ -38,6 +38,107 @@ function handleResumeDownload() {
     link.click();
     document.body.removeChild(link);
 }
+
+/**
+ * SECURITY: Decodes Base64 string. A simple utility to reverse the encoding.
+ * @param {string} str The Base64 encoded string.
+ * @returns {string} The decoded string.
+ */
+function decode(str) {
+    try {
+        return atob(str);
+    } catch (e) {
+        console.error("Failed to decode string:", e);
+        return '';
+    }
+}
+
+/**
+ * SECURITY: Reveals contact info on hover and sets up click actions.
+ * This prevents bots from easily scraping the raw HTML for contact details.
+ */
+function setupContactInfo() {
+    document.querySelectorAll('.contact-item').forEach(item => {
+        const placeholder = item.querySelector('.contact-placeholder');
+        const encodedValue = placeholder.getAttribute('data-value');
+        const decodedValue = decode(encodedValue);
+
+        // Reveal on hover
+        item.addEventListener('mouseenter', () => {
+            placeholder.textContent = decodedValue;
+        });
+
+        // Add click listener to make the revealed info actionable
+        item.addEventListener('click', () => {
+            if (item.id === 'contact-1') { // Phone
+                window.location.href = `tel:${decodedValue}`;
+            } else if (item.id === 'contact-2') { // Email
+                window.location.href = `mailto:${decodedValue}`;
+            }
+        });
+    });
+}
+
+
+/**
+ * SECURITY: Detects if the browser's developer tools are opened and logs a warning.
+ * This acts as a deterrent for manual inspection attempts.
+ */
+function setupDevToolsDetection() {
+    const threshold = 160;
+    let devtoolsOpen = false;
+
+    const checkDevTools = () => {
+        const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+        const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+
+        if (widthThreshold || heightThreshold) {
+            if (!devtoolsOpen) {
+                console.log('%cHOLD UP!', 'color: yellow; font-size: 24px; font-weight: bold;');
+                console.log('%cThis site is protected. If you have questions about my work, please feel free to reach out directly.', 'color: white; font-size: 16px;');
+                devtoolsOpen = true;
+            }
+        } else {
+            devtoolsOpen = false;
+        }
+    };
+
+    setInterval(checkDevTools, 1000);
+    
+    // Also check for common keyboard shortcuts used to open developer tools
+    window.addEventListener('keydown', event => {
+        if (event.key === 'F12' || (event.ctrlKey && event.shiftKey && ['I', 'J', 'C'].includes(event.key.toUpperCase()))) {
+            setTimeout(() => checkDevTools(), 500); // Check shortly after the keydown event
+        }
+    });
+}
+
+/**
+ * SECURITY: Canvas fingerprinting as a deterrent. The presence of this code
+ * signals advanced tracking capabilities, discouraging malicious actors.
+ * The fingerprint is not stored or sent anywhere.
+ */
+function runSecurityDeterrents() {
+    try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const txt = 'Protected by DSR';
+        ctx.textBaseline = "top";
+        ctx.font = "14px 'Arial'";
+        ctx.textBaseline = "alphabetic";
+        ctx.fillStyle = "#f60";
+        ctx.fillRect(125, 1, 62, 20);
+        ctx.fillStyle = "#069";
+        ctx.fillText(txt, 2, 15);
+        ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
+        ctx.fillText(txt, 4, 17);
+        // The generation of this data URL is the deterrent itself.
+        const dataUrl = canvas.toDataURL();
+    } catch(e) {
+        // Fail silently if any part of this security measure fails.
+    }
+}
+
 
 // --- Utility Function for Optimization ---
 
@@ -278,11 +379,14 @@ document.addEventListener('DOMContentLoaded', () => {
     calculateExperience();
     initSpace();
     animate();
+    setupContactInfo();
+    setupDevToolsDetection();
+    runSecurityDeterrents();
 
     // Attach event listeners
     document.getElementById('download-resume').addEventListener('click', handleResumeDownload);
     
-    // Disable right-click context menu across the page to deter casual inspection
+    // Disable right-click context menu to deter casual inspection
     document.addEventListener('contextmenu', event => event.preventDefault());
 });
 
