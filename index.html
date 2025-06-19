@@ -15,13 +15,15 @@
                 rel="stylesheet" />
         <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
         <link href="styles.css" rel="stylesheet" />
+        <!-- ADDED THREE.JS LIBRARY FOR WEBGL -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 
 <body class="bg-gray-900 text-gray-200 leading-relaxed">
-        <!-- Canvas for the new full-screen space animation -->
+        <!-- The canvas will now be used by Three.js for WebGL rendering -->
         <canvas id="space-canvas"></canvas>
 
-        <!-- Honeypot field for bot detection. If this has a value, it's a bot. -->
+        <!-- Honeypot field for bot detection -->
         <input type="text" name="honeypot" class="honeypot" aria-hidden="true">
 
         <div class="main-content max-w-5xl mx-auto p-4 md:p-8 lg:p-12 pt-24">
@@ -37,29 +39,36 @@
                                         Cross-Platform Expertise</p>
                                 <div
                                         class="contact-info flex flex-col sm:flex-row sm:flex-wrap justify-center md:justify-start items-center gap-x-6 gap-y-2 text-sm md:text-base">
-                                        <!-- Phone and Email will be dynamically generated and revealed on hover -->
-                                        <span id="contact-1" class="contact-item">
-                                                <i class="fas fa-phone fa-fw text-green-400"></i>
-                                                <span class="contact-placeholder"
-                                                        data-value="Kzk3MTUyNDEyODg4NA==">•••••••••••••</span>
-                                        </span>
-                                        <span id="contact-2" class="contact-item">
-                                                <i class="fas fa-envelope fa-fw text-green-400"></i>
-                                                <span class="contact-placeholder"
-                                                        data-value="bWFpbGRzcmFqYW5AZ21haWwuY29t">•••••••••••••••••</span>
-                                        </span>
+                                        <!-- Scratch-to-reveal contact items -->
+                                        <div class="scratch-container">
+                                                <div class="scratch-content" data-value="Kzk3MTUyNDEyODg4NA=="
+                                                        data-type="tel">
+                                                        <i class="fas fa-phone fa-fw text-green-400"></i>
+                                                        <span class="contact-text"></span>
+                                                </div>
+                                                <canvas class="scratch-canvas" width="160" height="24"></canvas>
+                                        </div>
+                                        <div class="scratch-container">
+                                                <div class="scratch-content" data-value="bWFpbGRzcmFqYW5AZ21haWwuY29t"
+                                                        data-type="mailto">
+                                                        <i class="fas fa-envelope fa-fw text-green-400"></i>
+                                                        <span class="contact-text"></span>
+                                                </div>
+                                                <canvas class="scratch-canvas" width="200" height="24"></canvas>
+                                        </div>
                                         <a class="hover:text-teal-400" href="https://linkedin.com/in/yzzkvf/"
                                                 id="linkedin-link" rel="noopener noreferrer" target="_blank">
                                                 <i class="fab fa-linkedin fa-fw text-green-400"></i> LinkedIn Profile
                                         </a>
                                 </div>
                                 <div class="menu-controls flex justify-center items-center gap-4">
-                                        <button class="menu-button" id="download-resume">
+                                        <button class="menu-button" id="show-quiz-button">
                                                 <i class="fas fa-file-arrow-down"></i> Download Resume
                                         </button>
                                 </div>
                         </div>
                 </header>
+                <!-- Main content sections -->
                 <section class="mb-10 p-6 pastel-section rounded-lg shadow-md" data-aos="fade-up">
                         <h2 class="pastel-heading"><i class="fas fa-user-tie pastel-accent"></i> Profile Summary</h2>
                         <p class="text-base">
@@ -171,8 +180,6 @@
 
                 <section class="mb-10 p-6 pastel-section rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="300">
                         <h2 class="pastel-heading"><i class="fas fa-briefcase pastel-accent"></i> Work Experience</h2>
-
-                        <!-- Dubai Police -->
                         <div class="timeline-item">
                                 <div class="timeline-icon">
                                         <i class="fas fa-building"></i>
@@ -192,13 +199,8 @@
                                                 national ID reading technology into mobile applications.</li>
                                         <li>Improved organizational productivity and efficiency by leading projects that
                                                 streamlined manual processes through mobile app development.</li>
-                                        <li>Created multiple modules for the Dubai Police Android and iOS Apps to handle
-                                                form
-                                                entries and data validation.</li>
                                 </ul>
                         </div>
-
-                        <!-- R2 International LTD -->
                         <div class="timeline-item">
                                 <div class="timeline-icon">
                                         <i class="fas fa-laptop-code"></i>
@@ -214,7 +216,7 @@
                                                 and
                                                 release of new features for various applications.</li>
                                         <li>Developed a BLE technology app prototype for a Swedish company using the
-                                                Estimote SDK to determine meeting space availability.</li>
+                                                Estimote SDK.</li>
                                 </ul>
                         </div>
                 </section>
@@ -256,7 +258,21 @@
                         <p>&copy; 2025 Deepak Samuel Rajan. All rights reserved.</p>
                 </footer>
         </div>
+
+        <!-- Quiz Modal -->
+        <div id="quiz-modal" class="modal-hidden">
+                <div class="modal-content">
+                        <button id="close-quiz-button" class="close-button">&times;</button>
+                        <h3 class="text-xl font-bold mb-4 text-orange-400">Prove you are human</h3>
+                        <p class="mb-4 text-gray-300">Solve this simple puzzle to proceed.</p>
+                        <input type="text" id="quiz-answer" class="quiz-input" placeholder="Your answer...">
+                        <button id="submit-quiz-button" class="submit-quiz-button">Submit</button>
+                        <p id="quiz-feedback" class="quiz-feedback"></p>
+                </div>
+        </div>
+
         <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+        <!-- The old script is now replaced with the new WebGL script -->
         <script src="scripts.js"></script>
 </body>
 

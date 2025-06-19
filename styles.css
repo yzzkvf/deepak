@@ -12,17 +12,17 @@
     --color-text-highlight: #FFFFFF;
     /* Pure white for strong emphasis */
 
-    /* Liquid Glass Colors (Dark Mode) */
-    --color-glass-bg: rgba(255, 255, 255, 0.04);
-    /* More subtle transparency for glass */
-    --color-glass-border: rgba(255, 255, 255, 0.2);
-    /* More defined border */
-    --color-glass-shadow: rgba(0, 0, 0, 0.5);
+    /* Liquid Glass Colors (Dark Mode) - **ENHANCED TRANSPARENCY** */
+    --color-glass-bg: rgba(10, 10, 15, 0.25);
+    /* Drastically lowered opacity */
+    --color-glass-border: rgba(255, 255, 255, 0.1);
+    /* Softened the border */
+    --color-glass-shadow: rgba(0, 0, 0, 0.6);
     /* Deeper, more diffused shadow */
-    --color-glass-shadow-hover: rgba(0, 0, 0, 0.7);
+    --color-glass-shadow-hover: rgba(0, 0, 0, 0.8);
     /* Even deeper on hover */
-    --blur-intensity: 30px;
-    /* Increased blur for stronger glass effect */
+    --blur-intensity: 5px;
+    /* Refined blur for better background visibility */
 
 
     /* General Design Tokens */
@@ -45,18 +45,16 @@
 
 /* Base Styles */
 html {
-    /* This is the key fix for the overscroll 'bounce' background color */
     background-color: var(--color-bg-primary);
 }
 
 body {
     font-family: var(--font-system);
-    /* Use system font stack */
     background: linear-gradient(to bottom, var(--color-bg-primary), var(--color-bg-secondary));
     color: var(--color-text-primary);
     letter-spacing: 0.01em;
-    /* Subtle letter spacing */
     min-height: 100vh;
+    width: 100%;
     overflow-x: hidden;
     position: relative;
     -webkit-font-smoothing: antialiased;
@@ -195,8 +193,7 @@ p.text-teal-300 {
     margin-bottom: 0;
 }
 
-.contact-info a,
-.contact-item {
+.contact-info a {
     color: var(--color-text-secondary);
     text-decoration: none;
     transition: color var(--transition-duration-fast) ease, transform var(--transition-duration-fast) var(--spring-ease);
@@ -205,20 +202,9 @@ p.text-teal-300 {
     cursor: pointer;
 }
 
-.contact-info a:hover,
-.contact-item:hover {
+.contact-info a:hover {
     color: var(--color-text-highlight);
     transform: translateY(-2px);
-}
-
-/* Style for the blurred placeholder text */
-.contact-placeholder {
-    filter: blur(4px);
-    transition: filter 0.3s ease;
-}
-
-.contact-item:hover .contact-placeholder {
-    filter: blur(0);
 }
 
 .contact-info i {
@@ -227,8 +213,119 @@ p.text-teal-300 {
     transition: color var(--transition-duration-fast) ease;
 }
 
+/* Scratch-to-reveal container styles */
+.scratch-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
 
-/* Menu Buttons (Integrated into header) */
+.scratch-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text-secondary);
+}
+
+.scratch-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+}
+
+/* Quiz Modal Styles */
+#quiz-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#quiz-modal.modal-visible {
+    opacity: 1;
+}
+
+#quiz-modal.modal-hidden {
+    display: none;
+}
+
+.modal-content {
+    background: var(--color-bg-secondary);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-glass-border);
+    box-shadow: 0 10px 35px var(--color-glass-shadow);
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+#quiz-modal.modal-visible .modal-content {
+    transform: scale(1);
+}
+
+.close-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    color: var(--color-text-secondary);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.quiz-input {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-glass-border);
+    background-color: var(--color-glass-bg);
+    color: var(--color-text-primary);
+    outline: none;
+}
+
+.submit-quiz-button {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: var(--border-radius-lg);
+    background-color: #f97316;
+    /* Orange */
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.submit-quiz-button:hover {
+    background-color: #ea580c;
+}
+
+.quiz-feedback {
+    margin-top: 1rem;
+    text-align: center;
+    font-weight: bold;
+    height: 1rem;
+}
+
+
+/* Menu Buttons */
 .menu-controls {
     display: flex;
     justify-content: center;
