@@ -14,7 +14,7 @@
 
     /* Liquid Glass Colors (Dark Mode) - **ENHANCED TRANSPARENCY** */
     --color-glass-bg: rgba(10, 10, 15, 0.25);
-    /* Drastically lowered opacity */
+    /* **Made significantly more transparent** */
     --color-glass-border: rgba(255, 255, 255, 0.1);
     /* Softened the border */
     --color-glass-shadow: rgba(0, 0, 0, 0.6);
@@ -95,7 +95,8 @@ body {
 
 /* Adjust main content padding to account for no fixed top bar */
 .max-w-5xl {
-    padding-top: 4rem;
+    padding: 2rem 1rem;
+    /* Adjusted padding for mobile first */
 }
 
 /* Header Section - Contains profile, title, and now menu buttons */
@@ -113,7 +114,8 @@ header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1rem;
+    /* Reduced gap for mobile */
     transform: translateZ(0);
     transition: transform var(--transition-duration-medium) var(--spring-ease),
         box-shadow var(--transition-duration-medium) var(--spring-ease),
@@ -162,7 +164,8 @@ img.border-teal-300 {
 /* Main Heading */
 h1 {
     color: var(--color-text-highlight);
-    font-size: 3.5rem;
+    font-size: 2.5rem;
+    /* Adjusted for mobile */
     line-height: 1.1;
     font-weight: 700;
     margin-bottom: 0.5rem;
@@ -174,7 +177,8 @@ h1 {
 /* Job Title */
 p.text-teal-300 {
     color: var(--color-text-secondary);
-    font-size: 1.6rem;
+    font-size: 1.25rem;
+    /* Adjusted for mobile */
     font-weight: 400;
     margin-bottom: 1rem;
     transition: color var(--transition-duration-medium) ease;
@@ -184,10 +188,11 @@ p.text-teal-300 {
 
 /* Contact Info */
 .contact-info {
-    flex-direction: row;
+    flex-direction: column;
+    /* Stack vertically on mobile */
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.75rem 2rem;
+    align-items: center;
+    gap: 0.75rem;
     font-size: 0.95rem;
     margin-top: 1rem;
     margin-bottom: 0;
@@ -251,6 +256,7 @@ p.text-teal-300 {
     z-index: 100;
     opacity: 0;
     transition: opacity 0.3s ease;
+    padding: 1rem;
 }
 
 #quiz-modal.modal-visible {
@@ -374,7 +380,8 @@ p.text-teal-300 {
 }
 
 .p-6 {
-    padding: 2rem;
+    padding: 1.5rem;
+    /* Reduced padding for mobile */
 }
 
 .pastel-section {
@@ -429,7 +436,8 @@ p.text-teal-300 {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
+    /* Adjusted for mobile */
     font-weight: 600;
     margin-bottom: 1.5rem;
     color: var(--color-text-primary);
@@ -439,13 +447,15 @@ p.text-teal-300 {
 }
 
 .pastel-heading i {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
+    /* Adjusted for mobile */
     color: var(--color-text-secondary);
     transition: color var(--transition-duration-medium) ease;
 }
 
 h3 {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
+    /* Adjusted for mobile */
     font-weight: 600;
     color: var(--color-text-primary);
     margin-bottom: 0.25rem;
@@ -455,7 +465,8 @@ h3 {
 }
 
 h4 {
-    font-size: 1rem;
+    font-size: 0.9rem;
+    /* Adjusted for mobile */
     font-weight: 400;
     color: var(--color-text-secondary);
     margin-bottom: 0.75rem;
@@ -465,7 +476,8 @@ h4 {
 }
 
 h5 {
-    font-size: 1.1rem;
+    font-size: 1rem;
+    /* Adjusted for mobile */
     font-weight: 500;
     color: var(--color-text-primary);
     margin-bottom: 0.1rem;
@@ -477,7 +489,8 @@ h5 {
 /* Body Text within sections */
 p.text-base,
 ul.list-disc li {
-    font-size: 1rem;
+    font-size: 0.95rem;
+    /* Adjusted for mobile */
     line-height: 1.6;
     color: var(--color-text-primary);
     transition: color var(--transition-duration-medium) ease;
@@ -491,8 +504,8 @@ ul.list-disc li {
     transition: color var(--transition-duration-medium) ease;
     position: relative;
     z-index: 2;
-    font-size: 0.9rem;
-    /* Slightly smaller for dates */
+    font-size: 0.85rem;
+    /* Adjusted for mobile */
 }
 
 /* Skill Tags - More refined */
@@ -500,9 +513,11 @@ ul.list-disc li {
     background-color: rgba(255, 255, 255, 0.08);
     color: var(--color-text-secondary);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 0.3rem 0.9rem;
+    padding: 0.3rem 0.7rem;
+    /* Adjusted for mobile */
     border-radius: 8px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    /* Adjusted for mobile */
     font-weight: 500;
     display: inline-block;
     margin: 0.2rem;
@@ -524,9 +539,9 @@ ul.list-disc li {
 /* Timeline Styling - Enhanced visual hierarchy and glass feel */
 .timeline-item {
     position: relative;
-    padding-left: 3rem;
-    padding-bottom: 2.5rem;
-    /* Increased spacing */
+    padding-left: 2.5rem;
+    /* Adjusted for mobile */
+    padding-bottom: 2rem;
     border-left: 2px solid rgba(255, 255, 255, 0.1);
     transition: border-left-color var(--transition-duration-medium) ease;
     z-index: 2;
@@ -540,17 +555,18 @@ ul.list-disc li {
 
 .timeline-icon {
     position: absolute;
-    left: -1rem;
+    left: -0.75rem;
+    /* Adjusted for mobile */
     top: -0.2rem;
     background-color: var(--color-glass-bg);
     border: 1px solid var(--color-glass-border);
     border-radius: 50%;
     padding: 0.4rem;
     color: var(--color-text-highlight);
-    width: 2rem;
-    /* Slightly smaller */
-    height: 2rem;
-    /* Slightly smaller */
+    width: 1.5rem;
+    /* Adjusted for mobile */
+    height: 1.5rem;
+    /* Adjusted for mobile */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -571,6 +587,87 @@ ul.list-disc li {
 }
 
 .timeline-icon i {
-    font-size: 1rem;
-    /* Slightly smaller */
+    font-size: 0.8rem;
+    /* Adjusted for mobile */
+}
+
+/* Media Queries for Responsive Design */
+@media (min-width: 768px) {
+    .max-w-5xl {
+        padding: 4rem 2rem;
+        /* Restore padding for larger screens */
+    }
+
+    header {
+        flex-direction: row;
+        /* Horizontal layout on larger screens */
+        gap: 2rem;
+    }
+
+    h1 {
+        font-size: 3.5rem;
+    }
+
+    p.text-teal-300 {
+        font-size: 1.6rem;
+    }
+
+    .contact-info {
+        flex-direction: row;
+        /* Horizontal layout */
+        gap: 0.75rem 2rem;
+    }
+
+    .p-6 {
+        padding: 2rem;
+    }
+
+    .pastel-heading {
+        font-size: 1.8rem;
+    }
+
+    .pastel-heading i {
+        font-size: 1.5rem;
+    }
+
+    h3 {
+        font-size: 1.25rem;
+    }
+
+    h4 {
+        font-size: 1rem;
+    }
+
+    h5 {
+        font-size: 1.1rem;
+    }
+
+    p.text-base,
+    ul.list-disc li {
+        font-size: 1rem;
+    }
+
+    .sub-role-dates,
+    .degree-details-light-mode {
+        font-size: 0.9rem;
+    }
+
+    .skill-tag {
+        font-size: 0.85rem;
+        padding: 0.3rem 0.9rem;
+    }
+
+    .timeline-item {
+        padding-left: 3rem;
+    }
+
+    .timeline-icon {
+        left: -1rem;
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .timeline-icon i {
+        font-size: 1rem;
+    }
 }

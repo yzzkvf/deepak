@@ -276,250 +276,268 @@ function debounce(func, wait) {
     };
 };
 
+/**
+ * Checks for WebGL support in the browser.
+ * @returns {boolean} True if WebGL is supported, false otherwise.
+ */
+function supportsWebGL() {
+    try {
+        const canvas = document.createElement('canvas');
+        return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+    } catch (e) {
+        return false;
+    }
+}
+
+
+// --- Animation Systems (WebGL and 2D Fallback) ---
+
+const canvas = document.getElementById('space-canvas');
+let animationFrameId;
 
 // --- WebGL 3D Space Experience ---
-
-let scene, camera, renderer, starField1, starField2, planets = [], asteroids = [];
-const clock = new THREE.Clock();
-
 function initWebGLSpace() {
-    // Scene setup
-    scene = new THREE.Scene();
+    const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x000000, 0.0007);
-
-    // Camera setup
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 4000);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 4000);
     camera.position.z = 5;
 
-    // Renderer setup
-    const canvas = document.getElementById('space-canvas');
-    renderer = new THREE.WebGLRenderer({
-        canvas: canvas,
-        antialias: true,
-        alpha: true
-    });
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     
-    // Lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
     scene.add(ambientLight);
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
     directionalLight.position.set(5, 3, 5);
     scene.add(directionalLight);
 
-    // Create Starfields for seamless looping
     const starGeometry = createStarGeometry(15000);
     const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.7 });
-    starField1 = new THREE.Points(starGeometry, starMaterial);
-    starField2 = new THREE.Points(starGeometry, starMaterial);
+    const starField1 = new THREE.Points(starGeometry, starMaterial);
+    const starField2 = starField1.clone();
     starField2.position.z = -2000;
     scene.add(starField1, starField2);
     
-    // ** Planets and Asteroids will now be spawned over time in the animation loop **
-    
-    animateWebGL();
-}
+    let planets = [];
+    let asteroids = [];
 
-function createStarGeometry(count) {
-     const starVertices = [];
-    for (let i = 0; i < count; i++) {
-        const x = THREE.MathUtils.randFloatSpread(2000);
-        const y = THREE.MathUtils.randFloatSpread(2000);
-        const z = THREE.MathUtils.randFloatSpread(2000);
-        starVertices.push(x, y, z);
-    }
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
-    return geometry;
-}
+    const clock = new THREE.Clock();
 
-function createPlanet() {
-    const planetType = Math.random();
-    let planet;
+    function animate() {
+        animationFrameId = requestAnimationFrame(animate);
+        const delta = clock.getDelta();
+        const time = clock.getElapsedTime();
 
-    if (planetType < 0.33) {
-        planet = createRockyPlanet();
-    } else if (planetType < 0.66) {
-        planet = createGasGiant();
-    } else {
-        planet = createIcyPlanet();
-    }
+        camera.position.x += Math.sin(time * 0.05) * 0.02;
+        camera.position.y += Math.cos(time * 0.04) * 0.02;
+        camera.lookAt(scene.position);
 
-    resetPlanetPosition(planet);
-    planets.push(planet);
-    scene.add(planet);
-}
+        starField1.position.z += delta * 100;
+        starField2.position.z += delta * 100;
+        if (starField1.position.z > 2000) starField1.position.z -= 4000;
+        if (starField2.position.z > 2000) starField2.position.z -= 4000;
 
-function createRockyPlanet() {
-    const size = THREE.MathUtils.randFloat(10, 30);
-    const geometry = new THREE.SphereGeometry(size, 32, 32);
-    const texture = new THREE.CanvasTexture(generateRockyTexture());
-    const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.8 });
-    return new THREE.Mesh(geometry, material);
-}
-
-function createGasGiant() {
-    const size = THREE.MathUtils.randFloat(40, 70);
-    const geometry = new THREE.SphereGeometry(size, 32, 32);
-    const texture = new THREE.CanvasTexture(generateGasGiantTexture());
-    const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.9 });
-    const planet = new THREE.Mesh(geometry, material);
-
-    const ringGeom = new THREE.RingGeometry(size * 1.2, size * 1.8, 64);
-    const ringMat = new THREE.MeshBasicMaterial({ 
-        color: 0xcccccc, 
-        side: THREE.DoubleSide, 
-        transparent: true, 
-        opacity: 0.4
-    });
-    const ring = new THREE.Mesh(ringGeom, ringMat);
-    ring.rotation.x = Math.PI / 2;
-    planet.add(ring);
-    
-    return planet;
-}
-
-function createIcyPlanet() {
-    const size = THREE.MathUtils.randFloat(15, 40);
-    const geometry = new THREE.SphereGeometry(size, 32, 32);
-    const texture = new THREE.CanvasTexture(generateIcyTexture());
-    const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.2, metalness: 0.1 });
-    return new THREE.Mesh(geometry, material);
-}
-
-function generateRockyTexture() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 512; canvas.height = 256;
-    const ctx = canvas.getContext('2d');
-    const baseColor = new THREE.Color().setHSL(Math.random() * 0.1 + 0.05, 0.5, 0.4);
-    ctx.fillStyle = `#${baseColor.getHexString()}`;
-    ctx.fillRect(0, 0, 512, 256);
-    for (let i = 0; i < 2000; i++) {
-        ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.2})`;
-        ctx.beginPath();
-        ctx.arc(Math.random() * 512, Math.random() * 256, Math.random() * 5, 0, Math.PI * 2);
-        ctx.fill();
-    }
-    return canvas;
-}
-
-function generateGasGiantTexture() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 512; canvas.height = 256;
-    const ctx = canvas.getContext('2d');
-    const baseColor1 = new THREE.Color().setHSL(Math.random() * 0.1 + 0.1, 0.6, 0.6);
-    const baseColor2 = new THREE.Color().setHSL(Math.random() * 0.1 + 0.05, 0.5, 0.5);
-    
-    for(let i=0; i<15; i++) {
-        ctx.fillStyle = i % 2 === 0 ? `#${baseColor1.getHexString()}` : `#${baseColor2.getHexString()}`;
-        ctx.fillRect(0, i * (256/15), 512, 256/15);
-    }
-    return canvas;
-}
-
-function generateIcyTexture() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 512; canvas.height = 256;
-    const ctx = canvas.getContext('2d');
-    const baseColor = new THREE.Color().setHSL(Math.random() * 0.1 + 0.55, 0.8, 0.8);
-    ctx.fillStyle = `#${baseColor.getHexString()}`;
-    ctx.fillRect(0, 0, 512, 256);
-    for (let i = 0; i < 500; i++) {
-        ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.3})`;
-        ctx.beginPath();
-        ctx.arc(Math.random() * 512, Math.random() * 256, Math.random() * 10, 0, Math.PI * 2);
-        ctx.fill();
-    }
-    return canvas;
-}
-
-function createAsteroidBelt() {
-    const count = 200; // Create smaller clusters
-    const belt = new THREE.Group();
-    for(let i=0; i < count; i++) {
-        const size = THREE.MathUtils.randFloat(0.5, 3);
-        const geometry = new THREE.DodecahedronGeometry(size, 0);
-        const material = new THREE.MeshStandardMaterial({color: 0x888888, roughness: 0.9});
-        const asteroid = new THREE.Mesh(geometry, material);
+        if (Math.random() < 0.001 && planets.length < 4) createAndAddPlanet();
+        if (Math.random() < 0.0005 && asteroids.length < 2) createAndAddAsteroidBelt();
         
-        asteroid.position.set(
-            THREE.MathUtils.randFloatSpread(50), 
-            THREE.MathUtils.randFloatSpread(50), 
-            THREE.MathUtils.randFloatSpread(50)
-        );
-        asteroid.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
-        belt.add(asteroid);
+        [...planets, ...asteroids].forEach(obj => {
+            obj.position.add(obj.userData.velocity);
+            obj.rotation.y += 0.002;
+            if(obj.position.z > camera.position.z + 500) {
+                scene.remove(obj);
+                if (planets.includes(obj)) planets = planets.filter(p => p !== obj);
+                if (asteroids.includes(obj)) asteroids = asteroids.filter(a => a !== obj);
+            }
+        });
+
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    function createStarGeometry(count) {
+        const vertices = [];
+        for (let i = 0; i < count; i++) {
+            vertices.push(THREE.MathUtils.randFloatSpread(2000));
+            vertices.push(THREE.MathUtils.randFloatSpread(2000));
+            vertices.push(THREE.MathUtils.randFloatSpread(2000));
+        }
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        return geometry;
+    }
+
+    function createAndAddPlanet() {
+        const planetType = Math.random();
+        let planet;
+        if (planetType < 0.33) planet = createRockyPlanet();
+        else if (planetType < 0.66) planet = createGasGiant();
+        else planet = createIcyPlanet();
+        resetPlanetPosition(planet);
+        planets.push(planet);
+        scene.add(planet);
     }
     
-    // Position the entire cluster far away
-    belt.position.z = THREE.MathUtils.randFloat(-1500, -2000);
-    belt.position.x = THREE.MathUtils.randFloatSpread(800);
-    belt.position.y = THREE.MathUtils.randFloatSpread(400);
-    belt.userData.velocity = new THREE.Vector3(0, 0, THREE.MathUtils.randFloat(0.8, 2.5));
+    function createRockyPlanet() {
+        const size = THREE.MathUtils.randFloat(10, 30);
+        const geometry = new THREE.SphereGeometry(size, 32, 32);
+        const texture = new THREE.CanvasTexture(generateProceduralTexture('rocky'));
+        const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.8 });
+        return new THREE.Mesh(geometry, material);
+    }
+
+    function createGasGiant() {
+        const size = THREE.MathUtils.randFloat(40, 70);
+        const geometry = new THREE.SphereGeometry(size, 32, 32);
+        const texture = new THREE.CanvasTexture(generateProceduralTexture('gas'));
+        const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.9 });
+        const planet = new THREE.Mesh(geometry, material);
+        const ringGeom = new THREE.RingGeometry(size * 1.2, size * 1.8, 64);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
+        const ring = new THREE.Mesh(ringGeom, ringMat);
+        ring.rotation.x = Math.PI / 2;
+        planet.add(ring);
+        return planet;
+    }
     
-    asteroids.push(belt);
-    scene.add(belt);
-}
+    function createIcyPlanet() {
+        const size = THREE.MathUtils.randFloat(15, 40);
+        const geometry = new THREE.SphereGeometry(size, 32, 32);
+        const texture = new THREE.CanvasTexture(generateProceduralTexture('icy'));
+        const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.2, metalness: 0.1 });
+        return new THREE.Mesh(geometry, material);
+    }
 
-function resetPlanetPosition(planet) {
-     planet.position.z = THREE.MathUtils.randFloat(-1800, -2500); // Start further back
-     planet.position.x = THREE.MathUtils.randFloatSpread(1200);
-     planet.position.y = THREE.MathUtils.randFloatSpread(700);
-     planet.userData.velocity = new THREE.Vector3(0, 0, THREE.MathUtils.randFloat(0.5, 2));
-}
-
-
-function animateWebGL() {
-    requestAnimationFrame(animateWebGL);
-    const delta = clock.getDelta();
-    const time = clock.getElapsedTime();
-
-    // Automatic camera pan for a cinematic feel
-    camera.position.x += Math.sin(time * 0.05) * 0.02;
-    camera.position.y += Math.cos(time * 0.04) * 0.02;
-    camera.lookAt(scene.position);
-    
-    // Animate starfields for seamless travel
-    starField1.position.z += delta * 100;
-    starField2.position.z += delta * 100;
-    if (starField1.position.z > 2000) starField1.position.z -= 4000;
-    if (starField2.position.z > 2000) starField2.position.z -= 4000;
-
-    // ** RARELY SPAWN NEW OBJECTS **
-    if (Math.random() < 0.001 && planets.length < 4) createPlanet();
-    if (Math.random() < 0.0005 && asteroids.length < 2) createAsteroidBelt();
-
-    // Move planets and asteroids
-    [...planets, ...asteroids].forEach(obj => {
-        obj.position.add(obj.userData.velocity);
-        obj.rotation.y += 0.002;
-        if(obj.position.z > camera.position.z + 500) {
-            // Instead of resetting, just remove it. New ones will be spawned.
-            scene.remove(obj);
-            if (planets.includes(obj)) planets = planets.filter(p => p !== obj);
-            if (asteroids.includes(obj)) asteroids = asteroids.filter(a => a !== obj);
+    function generateProceduralTexture(type) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512; canvas.height = 256;
+        const ctx = canvas.getContext('2d');
+        if (type === 'rocky') {
+            const baseColor = new THREE.Color().setHSL(Math.random() * 0.1 + 0.05, 0.5, 0.4);
+            ctx.fillStyle = `#${baseColor.getHexString()}`;
+            ctx.fillRect(0, 0, 512, 256);
+            for (let i = 0; i < 2000; i++) {
+                ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.2})`;
+                ctx.beginPath();
+                ctx.arc(Math.random() * 512, Math.random() * 256, Math.random() * 5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        } else if (type === 'gas') {
+            const c1 = new THREE.Color().setHSL(Math.random() * 0.1 + 0.1, 0.6, 0.6);
+            const c2 = new THREE.Color().setHSL(Math.random() * 0.1 + 0.05, 0.5, 0.5);
+            for(let i=0; i<15; i++) {
+                ctx.fillStyle = i % 2 === 0 ? `#${c1.getHexString()}` : `#${c2.getHexString()}`;
+                ctx.fillRect(0, i * (256/15), 512, 256/15);
+            }
+        } else { // icy
+            const baseColor = new THREE.Color().setHSL(Math.random() * 0.1 + 0.55, 0.8, 0.8);
+            ctx.fillStyle = `#${baseColor.getHexString()}`;
+            ctx.fillRect(0, 0, 512, 256);
+            for (let i = 0; i < 500; i++) {
+                ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.3})`;
+                ctx.beginPath();
+                ctx.arc(Math.random() * 512, Math.random() * 256, Math.random() * 10, 0, Math.PI * 2);
+                ctx.fill();
+            }
         }
-    });
+        return canvas;
+    }
 
-    renderer.render(scene, camera);
+    function createAndAddAsteroidBelt() {
+        const count = 200;
+        const belt = new THREE.Group();
+        for(let i=0; i < count; i++) {
+            const size = THREE.MathUtils.randFloat(0.5, 3);
+            const geometry = new THREE.DodecahedronGeometry(size, 0);
+            const material = new THREE.MeshStandardMaterial({color: 0x888888, roughness: 0.9});
+            const asteroid = new THREE.Mesh(geometry, material);
+            asteroid.position.set(THREE.MathUtils.randFloatSpread(50), THREE.MathUtils.randFloatSpread(50), THREE.MathUtils.randFloatSpread(50));
+            asteroid.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+            belt.add(asteroid);
+        }
+        belt.position.z = THREE.MathUtils.randFloat(-1500, -2000);
+        belt.position.x = THREE.MathUtils.randFloatSpread(800);
+        belt.position.y = THREE.MathUtils.randFloatSpread(400);
+        belt.userData.velocity = new THREE.Vector3(0, 0, THREE.MathUtils.randFloat(0.8, 2.5));
+        asteroids.push(belt);
+        scene.add(belt);
+    }
+    
+    function resetPlanetPosition(planet) {
+         planet.position.z = THREE.MathUtils.randFloat(-1800, -2500);
+         planet.position.x = THREE.MathUtils.randFloatSpread(1200);
+         planet.position.y = THREE.MathUtils.randFloatSpread(700);
+         planet.userData.velocity = new THREE.Vector3(0, 0, THREE.MathUtils.randFloat(0.5, 2));
+    }
+    
+    window.addEventListener('resize', debounce(() => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }, 250));
+}
+
+// --- 2D Canvas Fallback ---
+function init2DFallback() {
+    const ctx = canvas.getContext('2d');
+    let stars = Array.from({ length: 600 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 1.5,
+        alpha: Math.random(),
+        speed: Math.random() * 0.2 + 0.1
+    }));
+    
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        stars.forEach(star => {
+            star.x = Math.random() * canvas.width;
+            star.y = Math.random() * canvas.height;
+        });
+    }
+    resizeCanvas();
+
+    function animate2D() {
+        animationFrameId = requestAnimationFrame(animate2D);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+        
+        stars.forEach(star => {
+            star.y -= star.speed;
+            if (star.y < 0) {
+                star.y = canvas.height;
+                star.x = Math.random() * canvas.width;
+            }
+            ctx.globalAlpha = star.alpha;
+            ctx.beginPath();
+            ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+    }
+    animate2D();
+    
+    window.addEventListener('resize', debounce(resizeCanvas, 250));
 }
 
 
-// --- Event Listeners ---
+// --- Main Execution ---
 document.addEventListener('DOMContentLoaded', () => {
+    // Run all non-animation setup functions
     calculateExperience();
-    initWebGLSpace();
     setupScratchCards();
     setupQuizModal();
     setupDevToolsDetection();
     runSecurityDeterrents();
     
     document.addEventListener('contextmenu', event => event.preventDefault());
-});
 
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    // Check for WebGL support and initialize the appropriate animation
+    if (supportsWebGL()) {
+        initWebGLSpace();
+    } else {
+        console.log("WebGL not supported, falling back to 2D canvas animation.");
+        init2DFallback();
+    }
 });
