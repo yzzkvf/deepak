@@ -44,7 +44,11 @@
 }
 
 /* Base Styles */
-html,
+html {
+    /* This is the key fix for the overscroll 'bounce' background color */
+    background-color: var(--color-bg-primary);
+}
+
 body {
     font-family: var(--font-system);
     /* Use system font stack */
@@ -52,7 +56,6 @@ body {
     color: var(--color-text-primary);
     letter-spacing: 0.01em;
     /* Subtle letter spacing */
-    transition: background var(--transition-duration-slow) ease, color var(--transition-duration-slow) ease;
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
@@ -85,8 +88,8 @@ body {
 
 /* Header Section - Contains profile, title, and now menu buttons */
 header {
-    position: sticky;
-    top: 2rem;
+    /* CHANGED: position: sticky -> position: relative. This stops it from sticking to the top. */
+    position: relative;
     z-index: 60;
     margin-bottom: 2rem;
     padding: 1.5rem;
