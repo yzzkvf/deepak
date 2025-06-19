@@ -297,10 +297,16 @@ let animationFrameId;
 
 // --- WebGL 3D Space Experience ---
 function initWebGLSpace() {
+    if (typeof THREE === 'undefined') {
+        console.error("Three.js is not loaded. Falling back to 2D.");
+        init2DFallback();
+        return;
+    }
+
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x000000, 0.0007);
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 4000);
-    camera.position.z = 5;
+    camera.position.z = 10;
 
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -316,38 +322,57 @@ function initWebGLSpace() {
     const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.7 });
     const starField1 = new THREE.Points(starGeometry, starMaterial);
     const starField2 = starField1.clone();
+    starField1.position.z = 0;
     starField2.position.z = -2000;
     scene.add(starField1, starField2);
     
     let planets = [];
     let asteroids = [];
-
+    let constellations = [];
+    
     const clock = new THREE.Clock();
-
+    let lastSpawnTime = { planet: 0, asteroid: 0, constellation: 0 };
+    const SPAWN_INTERVAL = { planet: 20000, asteroid: 30000, constellation: 60000 };
+    
     function animate() {
         animationFrameId = requestAnimationFrame(animate);
         const delta = clock.getDelta();
         const time = clock.getElapsedTime();
 
-        camera.position.x += Math.sin(time * 0.05) * 0.02;
-        camera.position.y += Math.cos(time * 0.04) * 0.02;
-        camera.lookAt(scene.position);
-
+        // ** GENTLE AUTOMATIC CAMERA PAN **
+        camera.position.x = Math.sin(time * 0.05) * 2;
+        camera.position.y = Math.sin(time * 0.03) * 1;
+        camera.lookAt(0, 0, 0);
+        
+        // ** SEAMLESS ENDLESS STARFIELD **
         starField1.position.z += delta * 100;
         starField2.position.z += delta * 100;
         if (starField1.position.z > 2000) starField1.position.z -= 4000;
         if (starField2.position.z > 2000) starField2.position.z -= 4000;
 
-        if (Math.random() < 0.001 && planets.length < 4) createAndAddPlanet();
-        if (Math.random() < 0.0005 && asteroids.length < 2) createAndAddAsteroidBelt();
+        // ** RARE, DYNAMIC OBJECT SPAWNING **
+        if (time > lastSpawnTime.planet + SPAWN_INTERVAL.planet / 1000) {
+            if (planets.length < 3) createAndAddPlanet();
+            lastSpawnTime.planet = time;
+        }
+        if (time > lastSpawnTime.asteroid + SPAWN_INTERVAL.asteroid / 1000) {
+            if (asteroids.length < 1) createAndAddAsteroidBelt();
+            lastSpawnTime.asteroid = time;
+        }
+        if (time > lastSpawnTime.constellation + SPAWN_INTERVAL.constellation / 1000) {
+            if (constellations.length < 1) createAndAddConstellation();
+            lastSpawnTime.constellation = time;
+        }
         
-        [...planets, ...asteroids].forEach(obj => {
+        // ** UPDATE AND CLEANUP DYNAMIC OBJECTS **
+        [...planets, ...asteroids, ...constellations].forEach(obj => {
             obj.position.add(obj.userData.velocity);
-            obj.rotation.y += 0.002;
+            obj.rotation.y += obj.userData.rotationSpeed;
             if(obj.position.z > camera.position.z + 500) {
                 scene.remove(obj);
                 if (planets.includes(obj)) planets = planets.filter(p => p !== obj);
                 if (asteroids.includes(obj)) asteroids = asteroids.filter(a => a !== obj);
+                if (constellations.includes(obj)) constellations = constellations.filter(c => c !== obj);
             }
         });
 
@@ -370,10 +395,10 @@ function initWebGLSpace() {
     function createAndAddPlanet() {
         const planetType = Math.random();
         let planet;
-        if (planetType < 0.33) planet = createRockyPlanet();
-        else if (planetType < 0.66) planet = createGasGiant();
+        if (planetType < 0.4) planet = createRockyPlanet();
+        else if (planetType < 0.8) planet = createGasGiant();
         else planet = createIcyPlanet();
-        resetPlanetPosition(planet);
+        resetObjectPosition(planet);
         planets.push(planet);
         scene.add(planet);
     }
@@ -395,7 +420,7 @@ function initWebGLSpace() {
         const ringGeom = new THREE.RingGeometry(size * 1.2, size * 1.8, 64);
         const ringMat = new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
         const ring = new THREE.Mesh(ringGeom, ringMat);
-        ring.rotation.x = Math.PI / 2;
+        ring.rotation.x = Math.random() * Math.PI;
         planet.add(ring);
         return planet;
     }
@@ -444,32 +469,62 @@ function initWebGLSpace() {
     }
 
     function createAndAddAsteroidBelt() {
-        const count = 200;
+        const count = 150;
         const belt = new THREE.Group();
+        const baseGeometry = new THREE.IcosahedronGeometry(1, 0);
+
         for(let i=0; i < count; i++) {
-            const size = THREE.MathUtils.randFloat(0.5, 3);
-            const geometry = new THREE.DodecahedronGeometry(size, 0);
-            const material = new THREE.MeshStandardMaterial({color: 0x888888, roughness: 0.9});
+            const geometry = baseGeometry.clone();
+            const positionAttribute = geometry.getAttribute('position');
+            const vertex = new THREE.Vector3();
+            for (let j = 0; j < positionAttribute.count; j++){
+                vertex.fromBufferAttribute(positionAttribute, j);
+                vertex.x += Math.random() * 0.4 - 0.2;
+                vertex.y += Math.random() * 0.4 - 0.2;
+                vertex.z += Math.random() * 0.4 - 0.2;
+                positionAttribute.setXYZ(j, vertex.x, vertex.y, vertex.z);
+            }
+            const material = new THREE.MeshStandardMaterial({color: new THREE.Color().setHSL(0,0,Math.random()*0.3 + 0.2), roughness: 0.9});
             const asteroid = new THREE.Mesh(geometry, material);
-            asteroid.position.set(THREE.MathUtils.randFloatSpread(50), THREE.MathUtils.randFloatSpread(50), THREE.MathUtils.randFloatSpread(50));
+            asteroid.position.set(THREE.MathUtils.randFloatSpread(80), THREE.MathUtils.randFloatSpread(80), THREE.MathUtils.randFloatSpread(80));
             asteroid.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
             belt.add(asteroid);
         }
-        belt.position.z = THREE.MathUtils.randFloat(-1500, -2000);
-        belt.position.x = THREE.MathUtils.randFloatSpread(800);
-        belt.position.y = THREE.MathUtils.randFloatSpread(400);
-        belt.userData.velocity = new THREE.Vector3(0, 0, THREE.MathUtils.randFloat(0.8, 2.5));
+        resetObjectPosition(belt);
         asteroids.push(belt);
         scene.add(belt);
     }
     
-    function resetPlanetPosition(planet) {
-         planet.position.z = THREE.MathUtils.randFloat(-1800, -2500);
-         planet.position.x = THREE.MathUtils.randFloatSpread(1200);
-         planet.position.y = THREE.MathUtils.randFloatSpread(700);
-         planet.userData.velocity = new THREE.Vector3(0, 0, THREE.MathUtils.randFloat(0.5, 2));
+    function createAndAddConstellation() {
+        const group = new THREE.Group();
+        const starCount = THREE.MathUtils.randInt(5, 10);
+        const points = [];
+        const starMaterial = new THREE.MeshBasicMaterial({ color: 0x99ccff, emissive: 0x99ccff });
+        for (let i = 0; i < starCount; i++) {
+            const starGeom = new THREE.SphereGeometry(0.5, 8, 8);
+            const star = new THREE.Mesh(starGeom, starMaterial);
+            star.position.set(THREE.MathUtils.randFloatSpread(100), THREE.MathUtils.randFloatSpread(100), 0);
+            points.push(star.position);
+            group.add(star);
+        }
+        const lineMaterial = new THREE.LineBasicMaterial({ color: 0x99ccff, transparent: true, opacity: 0.2 });
+        const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        const line = new THREE.Line(lineGeometry, lineMaterial);
+        group.add(line);
+        resetObjectPosition(group);
+        constellations.push(group);
+        scene.add(group);
     }
-    
+
+
+    function resetObjectPosition(obj) {
+         obj.position.z = THREE.MathUtils.randFloat(-3000, -4000);
+         obj.position.x = THREE.MathUtils.randFloatSpread(1500);
+         obj.position.y = THREE.MathUtils.randFloatSpread(800);
+         obj.userData.velocity = new THREE.Vector3(0, 0, THREE.MathUtils.randFloat(1.5, 4));
+         obj.userData.rotationSpeed = Math.random() * 0.005;
+    }
+
     window.addEventListener('resize', debounce(() => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
@@ -524,20 +579,23 @@ function init2DFallback() {
 
 // --- Main Execution ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Run all non-animation setup functions
-    calculateExperience();
-    setupScratchCards();
-    setupQuizModal();
-    setupDevToolsDetection();
-    runSecurityDeterrents();
-    
-    document.addEventListener('contextmenu', event => event.preventDefault());
+    try {
+        calculateExperience();
+        setupScratchCards();
+        setupQuizModal();
+        setupDevToolsDetection();
+        runSecurityDeterrents();
+        
+        document.addEventListener('contextmenu', event => event.preventDefault());
 
-    // Check for WebGL support and initialize the appropriate animation
-    if (supportsWebGL()) {
-        initWebGLSpace();
-    } else {
-        console.log("WebGL not supported, falling back to 2D canvas animation.");
-        init2DFallback();
+        if (supportsWebGL()) {
+            initWebGLSpace();
+        } else {
+            console.warn("WebGL not supported, falling back to 2D canvas animation.");
+            init2DFallback();
+        }
+    } catch (error) {
+        console.error("An error occurred during initialization:", error);
+        document.body.style.backgroundColor = '#020204';
     }
 });
