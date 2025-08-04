@@ -18,6 +18,9 @@
         <!-- Preload critical assets -->
         <link rel="preload" href="resources/profile-pic-optimized.webp" as="image" type="image/webp">
         <link rel="preload" href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap" as="style">
+        <link rel="preload" href="styles.min.css" as="style">
+        <link rel="preload" href="scripts.min.js" as="script">
+        
         <title>Deepak Samuel Rajan - Full Stack Developer</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
@@ -27,7 +30,7 @@
                 rel="stylesheet" media="print" onload="this.media='all'">
         <noscript><link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap" rel="stylesheet"></noscript>
         <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" media="print" onload="this.media='all'">
-        <link href="styles.css" rel="stylesheet" />
+        <link href="styles.min.css" rel="stylesheet" />
         <!-- ADDED THREE.JS LIBRARY FOR WEBGL - Load with defer for better performance -->
         <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
@@ -298,7 +301,61 @@
         </div>
 
         <script defer src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-        <script defer src="scripts.js"></script>
+        <script defer src="scripts.min.js"></script>
+        
+        <!-- Service Worker Registration & Performance Monitoring -->
+        <script>
+            // Service Worker Registration
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/service-worker.js')
+                        .then((registration) => {
+                            console.log('SW registered: ', registration);
+                        })
+                        .catch((registrationError) => {
+                            console.log('SW registration failed: ', registrationError);
+                        });
+                });
+            }
+
+            // Performance Monitoring
+            window.addEventListener('load', () => {
+                // Web Vitals tracking
+                if ('performance' in window) {
+                    const perfData = performance.getEntriesByType('navigation')[0];
+                    const paintEntries = performance.getEntriesByType('paint');
+                    
+                    console.group('Performance Metrics');
+                    console.log('DOM Content Loaded:', perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart, 'ms');
+                    console.log('Load Complete:', perfData.loadEventEnd - perfData.loadEventStart, 'ms');
+                    
+                    paintEntries.forEach(entry => {
+                        console.log(`${entry.name}:`, entry.startTime, 'ms');
+                    });
+                    
+                    // Largest Contentful Paint (LCP)
+                    const observer = new PerformanceObserver((list) => {
+                        for (const entry of list.getEntries()) {
+                            if (entry.entryType === 'largest-contentful-paint') {
+                                console.log('Largest Contentful Paint:', entry.startTime, 'ms');
+                            }
+                        }
+                    });
+                    observer.observe({entryTypes: ['largest-contentful-paint']});
+                    
+                    console.groupEnd();
+                }
+                
+                // Memory usage (if available)
+                if (performance.memory) {
+                    console.log('Memory Usage:', {
+                        used: (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2) + ' MB',
+                        total: (performance.memory.totalJSHeapSize / 1024 / 1024).toFixed(2) + ' MB',
+                        limit: (performance.memory.jsHeapSizeLimit / 1024 / 1024).toFixed(2) + ' MB'
+                    });
+                }
+            });
+        </script>
 </body>
 
 </html>

@@ -1,11 +1,3 @@
-// Initialize AOS for content animations on scroll
-AOS.init({
-    duration: 800,
-    once: true,
-    offset: 50,
-    easing: 'ease-out-cubic',
-});
-
 // --- Page Content & Security Functions ---
 
 /**
@@ -308,9 +300,21 @@ function initWebGLSpace() {
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 4000);
     camera.position.z = 10;
 
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    // Optimize renderer settings based on device capability
+    const pixelRatio = Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2);
+    const renderer = new THREE.WebGLRenderer({ 
+        canvas, 
+        antialias: !isMobile, // Disable antialiasing on mobile for performance
+        alpha: true,
+        powerPreference: "high-performance"
+    });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(pixelRatio);
+    
+    // Performance monitoring
+    let frameCount = 0;
+    let lastFPSCheck = performance.now();
+    let currentFPS = 60;
     
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
     scene.add(ambientLight);
@@ -322,9 +326,15 @@ function initWebGLSpace() {
         new THREE.PointsMaterial({ color: 0xffffff, size: 0.7, opacity: 0.8, transparent: true }),
         new THREE.PointsMaterial({ color: 0xffffff, size: 1.5, map: createStarTexture(), blending: THREE.AdditiveBlending, transparent: true, opacity: 0.5 })
     ];
-    const starField1 = new THREE.Points(createStarGeometry(15000), starMaterials[0]);
+    // Reduce star count based on device performance
+    const isMobile = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
+    const isLowEnd = navigator.hardwareConcurrency <= 4;
+    const starCount = isMobile ? 5000 : isLowEnd ? 8000 : 15000;
+    const brightStarCount = isMobile ? 50 : isLowEnd ? 100 : 200;
+    
+    const starField1 = new THREE.Points(createStarGeometry(starCount), starMaterials[0]);
     const starField2 = starField1.clone();
-    const brightStarField1 = new THREE.Points(createStarGeometry(200), starMaterials[1]);
+    const brightStarField1 = new THREE.Points(createStarGeometry(brightStarCount), starMaterials[1]);
     const brightStarField2 = brightStarField1.clone();
     starField1.position.z = 0;
     starField2.position.z = -2000;
@@ -340,8 +350,40 @@ function initWebGLSpace() {
     let lastSpawnTime = { planet: 0, asteroid: 0, constellation: 0 };
     const SPAWN_INTERVAL = { planet: 25000, asteroid: 35000, constellation: 70000 };
     
+    let isVisible = true;
+    
+    // Pause animation when page is not visible
+    document.addEventListener('visibilitychange', () => {
+        isVisible = !document.hidden;
+        if (isVisible && animationFrameId === null) {
+            animate(); // Resume animation
+        }
+    });
+    
     function animate() {
+        if (!isVisible) {
+            animationFrameId = null;
+            return; // Pause animation when page is hidden
+        }
+        
         animationFrameId = requestAnimationFrame(animate);
+        
+        // Performance monitoring and adaptive quality
+        frameCount++;
+        const now = performance.now();
+        if (now - lastFPSCheck >= 1000) {
+            currentFPS = frameCount;
+            frameCount = 0;
+            lastFPSCheck = now;
+            
+            // Adaptive quality: reduce effects if FPS is low
+            if (currentFPS < 30 && !isMobile) {
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio * 0.75, 1.5));
+            } else if (currentFPS > 55) {
+                renderer.setPixelRatio(pixelRatio);
+            }
+        }
+        
         const delta = clock.getDelta();
         const time = clock.getElapsedTime();
 
@@ -351,25 +393,31 @@ function initWebGLSpace() {
         camera.lookAt(0, 0, 0);
         
         // ** SEAMLESS ENDLESS STARFIELD **
-        starField1.position.z += delta * 20; // Slower speed
-        starField2.position.z += delta * 20;
+        const speed = isMobile ? 15 : 20; // Slower on mobile
+        starField1.position.z += delta * speed;
+        starField2.position.z += delta * speed;
         if (starField1.position.z > 2000) starField1.position.z -= 4000;
         if (starField2.position.z > 2000) starField2.position.z -= 4000;
         
         brightStarField1.position.z = starField1.position.z;
         brightStarField2.position.z = starField2.position.z;
 
-        // ** RARE, DYNAMIC OBJECT SPAWNING **
-        if (time > lastSpawnTime.planet + SPAWN_INTERVAL.planet / 1000) {
-            if (planets.length < 2) createAndAddPlanet(); // Reduced max planets
+        // ** RARE, DYNAMIC OBJECT SPAWNING ** (Reduced frequency on mobile/low-end)
+        const spawnMultiplier = isMobile ? 2 : isLowEnd ? 1.5 : 1;
+        const maxPlanets = isMobile ? 1 : 2;
+        const maxAsteroids = isMobile ? 0 : 1;
+        const maxConstellations = isMobile ? 0 : 1;
+        
+        if (time > lastSpawnTime.planet + (SPAWN_INTERVAL.planet * spawnMultiplier) / 1000) {
+            if (planets.length < maxPlanets) createAndAddPlanet();
             lastSpawnTime.planet = time;
         }
-        if (time > lastSpawnTime.asteroid + SPAWN_INTERVAL.asteroid / 1000) {
-            if (asteroids.length < 1) createAndAddAsteroidBelt();
+        if (time > lastSpawnTime.asteroid + (SPAWN_INTERVAL.asteroid * spawnMultiplier) / 1000) {
+            if (asteroids.length < maxAsteroids) createAndAddAsteroidBelt();
             lastSpawnTime.asteroid = time;
         }
-        if (time > lastSpawnTime.constellation + SPAWN_INTERVAL.constellation / 1000) {
-            if (constellations.length < 1) createAndAddConstellation();
+        if (time > lastSpawnTime.constellation + (SPAWN_INTERVAL.constellation * spawnMultiplier) / 1000) {
+            if (constellations.length < maxConstellations) createAndAddConstellation();
             lastSpawnTime.constellation = time;
         }
         
@@ -382,6 +430,15 @@ function initWebGLSpace() {
                 if (planets.includes(obj)) planets = planets.filter(p => p !== obj);
                 if (asteroids.includes(obj)) asteroids = asteroids.filter(a => a !== obj);
                 if (constellations.includes(obj)) constellations = constellations.filter(c => c !== obj);
+                // Dispose geometry and materials to free memory
+                if (obj.geometry) obj.geometry.dispose();
+                if (obj.material) {
+                    if (Array.isArray(obj.material)) {
+                        obj.material.forEach(m => m.dispose());
+                    } else {
+                        obj.material.dispose();
+                    }
+                }
             }
         });
 
@@ -428,7 +485,8 @@ function initWebGLSpace() {
     
     function createRockyPlanet() {
         const size = THREE.MathUtils.randFloat(10, 30);
-        const geometry = new THREE.SphereGeometry(size, 32, 32);
+        const segments = isMobile ? 16 : 32; // Reduce geometry complexity on mobile
+        const geometry = new THREE.SphereGeometry(size, segments, segments);
         const texture = new THREE.CanvasTexture(generateProceduralTexture('rocky'));
         const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.8 });
         return new THREE.Mesh(geometry, material);
@@ -436,12 +494,14 @@ function initWebGLSpace() {
 
     function createGasGiant() {
         const size = THREE.MathUtils.randFloat(40, 70);
-        const geometry = new THREE.SphereGeometry(size, 32, 32);
+        const segments = isMobile ? 16 : 32;
+        const geometry = new THREE.SphereGeometry(size, segments, segments);
         const texture = new THREE.CanvasTexture(generateProceduralTexture('gas'));
         const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.9 });
         const planet = new THREE.Mesh(geometry, material);
-        if (Math.random() > 0.5) {
-            const ringGeom = new THREE.RingGeometry(size * 1.2, size * 1.8, 64);
+        if (Math.random() > 0.5 && !isMobile) { // Skip rings on mobile
+            const ringSegments = isMobile ? 32 : 64;
+            const ringGeom = new THREE.RingGeometry(size * 1.2, size * 1.8, ringSegments);
             const ringMat = new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
             const ring = new THREE.Mesh(ringGeom, ringMat);
             ring.rotation.x = Math.random() * Math.PI;
@@ -452,7 +512,8 @@ function initWebGLSpace() {
     
     function createIcyPlanet() {
         const size = THREE.MathUtils.randFloat(15, 40);
-        const geometry = new THREE.SphereGeometry(size, 32, 32);
+        const segments = isMobile ? 16 : 32;
+        const geometry = new THREE.SphereGeometry(size, segments, segments);
         const texture = new THREE.CanvasTexture(generateProceduralTexture('icy'));
         const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.2, metalness: 0.1 });
         return new THREE.Mesh(geometry, material);
@@ -460,16 +521,21 @@ function initWebGLSpace() {
 
     function generateProceduralTexture(type) {
         const canvas = document.createElement('canvas');
-        canvas.width = 512; canvas.height = 256;
+        // Reduce texture size on mobile for better performance
+        const textureSize = isMobile ? 256 : 512;
+        canvas.width = textureSize; canvas.height = textureSize / 2;
         const ctx = canvas.getContext('2d');
+        const height = textureSize / 2;
         if (type === 'rocky') {
             const baseColor = new THREE.Color().setHSL(Math.random() * 0.1 + 0.05, 0.5, 0.4);
             ctx.fillStyle = `#${baseColor.getHexString()}`;
-            ctx.fillRect(0, 0, 512, 256);
-            for (let i = 0; i < 2000; i++) {
+            ctx.fillRect(0, 0, textureSize, height);
+            // Reduce detail count on mobile
+            const detailCount = isMobile ? 1000 : 2000;
+            for (let i = 0; i < detailCount; i++) {
                 ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.2})`;
                 ctx.beginPath();
-                ctx.arc(Math.random() * 512, Math.random() * 256, Math.random() * 5, 0, Math.PI * 2);
+                ctx.arc(Math.random() * textureSize, Math.random() * height, Math.random() * 5, 0, Math.PI * 2);
                 ctx.fill();
             }
         } else if (type === 'gas') {
@@ -477,16 +543,18 @@ function initWebGLSpace() {
             const c2 = new THREE.Color().setHSL(Math.random() * 0.1 + 0.05, 0.5, 0.5);
             for(let i=0; i<15; i++) {
                 ctx.fillStyle = i % 2 === 0 ? `#${c1.getHexString()}` : `#${c2.getHexString()}`;
-                ctx.fillRect(0, i * (256/15), 512, 256/15);
+                ctx.fillRect(0, i * (height/15), textureSize, height/15);
             }
         } else { // icy
             const baseColor = new THREE.Color().setHSL(Math.random() * 0.1 + 0.55, 0.8, 0.8);
             ctx.fillStyle = `#${baseColor.getHexString()}`;
-            ctx.fillRect(0, 0, 512, 256);
-            for (let i = 0; i < 500; i++) {
+            ctx.fillRect(0, 0, textureSize, height);
+            // Reduce detail count on mobile
+            const iceDetails = isMobile ? 250 : 500;
+            for (let i = 0; i < iceDetails; i++) {
                 ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.3})`;
                 ctx.beginPath();
-                ctx.arc(Math.random() * 512, Math.random() * 256, Math.random() * 10, 0, Math.PI * 2);
+                ctx.arc(Math.random() * textureSize, Math.random() * height, Math.random() * 10, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
@@ -494,9 +562,10 @@ function initWebGLSpace() {
     }
 
     function createAndAddAsteroidBelt() {
-        const count = 150;
+        const count = isMobile ? 75 : 150; // Reduce asteroid count on mobile
         const belt = new THREE.Group();
-        const baseGeometry = new THREE.IcosahedronGeometry(1, 0);
+        const detail = isMobile ? 0 : 0; // Keep low detail for performance
+        const baseGeometry = new THREE.IcosahedronGeometry(1, detail);
 
         for(let i=0; i < count; i++) {
             const geometry = baseGeometry.clone();
@@ -554,17 +623,28 @@ function initWebGLSpace() {
 // --- 2D Canvas Fallback ---
 function init2DFallback() {
     const ctx = canvas.getContext('2d');
-    let stars = Array.from({ length: 600 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
+    
+    // Optimize star count based on device performance
+    const isMobile = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
+    const starCount = isMobile ? 300 : 600;
+    
+    let stars = Array.from({ length: starCount }, () => ({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
         radius: Math.random() * 1.5,
         alpha: Math.random(),
         speed: Math.random() * 0.2 + 0.1
     }));
     
+    // Performance optimizations
+    let lastTime = 0;
+    const targetFPS = isMobile ? 30 : 60;
+    const frameInterval = 1000 / targetFPS;
+    
     function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+        // Reset stars to new dimensions
         stars.forEach(star => {
             star.x = Math.random() * canvas.width;
             star.y = Math.random() * canvas.height;
@@ -572,10 +652,29 @@ function init2DFallback() {
     }
     resizeCanvas();
 
-    function animate2D() {
+    function animate2D(currentTime = 0) {
+        // Pause animation when page is hidden
+        if (document.hidden) {
+            animationFrameId = null;
+            return;
+        }
+        
         animationFrameId = requestAnimationFrame(animate2D);
+        
+        // Throttle frame rate on mobile devices
+        if (currentTime - lastTime < frameInterval) {
+            return;
+        }
+        lastTime = currentTime;
+        
+        // Use more efficient clearing method
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Batch drawing operations for better performance
         ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+        
+        // Use beginPath once for all stars
+        ctx.beginPath();
         
         stars.forEach(star => {
             star.y -= star.speed;
@@ -583,13 +682,22 @@ function init2DFallback() {
                 star.y = canvas.height;
                 star.x = Math.random() * canvas.width;
             }
-            ctx.globalAlpha = star.alpha;
-            ctx.beginPath();
+            
+            // Use moveTo and arc for better performance
+            ctx.moveTo(star.x + star.radius, star.y);
             ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-            ctx.fill();
         });
-        ctx.globalAlpha = 1;
+        
+        ctx.fill();
     }
+    
+    // Resume animation when page becomes visible
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && animationFrameId === null) {
+            animate2D();
+        }
+    });
+    
     animate2D();
     
     window.addEventListener('resize', debounce(resizeCanvas, 250));
@@ -597,7 +705,7 @@ function init2DFallback() {
 
 
 // --- Main Execution ---
-document.addEventListener('DOMContentLoaded', () => {
+function initializeApp() {
     try {
         calculateExperience();
         setupScratchCards();
@@ -607,14 +715,91 @@ document.addEventListener('DOMContentLoaded', () => {
         
         document.addEventListener('contextmenu', event => event.preventDefault());
 
-        if (supportsWebGL()) {
-            initWebGLSpace();
+        // Lazy load animations based on user interaction and page visibility
+        let animationInitialized = false;
+        
+        function initializeAnimation() {
+            if (animationInitialized) return;
+            animationInitialized = true;
+            
+            if (typeof THREE !== 'undefined' && supportsWebGL()) {
+                initWebGLSpace();
+            } else {
+                init2DFallback();
+            }
+        }
+        
+        // Initialize animation on user interaction or after a delay
+        const interactionEvents = ['click', 'touchstart', 'scroll', 'mousemove'];
+        let userInteracted = false;
+        
+        function handleUserInteraction() {
+            if (!userInteracted) {
+                userInteracted = true;
+                interactionEvents.forEach(event => {
+                    document.removeEventListener(event, handleUserInteraction);
+                });
+                initializeAnimation();
+            }
+        }
+        
+        interactionEvents.forEach(event => {
+            document.addEventListener(event, handleUserInteraction, { passive: true, once: true });
+        });
+        
+        // Fallback: initialize after 3 seconds if no interaction
+        setTimeout(() => {
+            if (!userInteracted) {
+                initializeAnimation();
+            }
+        }, 3000);
+        
+        // Wait for Three.js to load before initializing WebGL (legacy fallback)
+        if (typeof THREE !== 'undefined' && supportsWebGL()) {
+            // Will be handled by interaction or timeout
+        } else if (typeof THREE === 'undefined') {
+            // Fallback if Three.js hasn't loaded yet
+            const checkThreeJS = setInterval(() => {
+                if (typeof THREE !== 'undefined') {
+                    clearInterval(checkThreeJS);
+                    if (supportsWebGL()) {
+                        initWebGLSpace();
+                    } else {
+                        console.warn("WebGL not supported, falling back to 2D canvas animation.");
+                        init2DFallback();
+                    }
+                }
+            }, 100);
+            // Timeout fallback
+            setTimeout(() => {
+                clearInterval(checkThreeJS);
+                if (typeof THREE === 'undefined') {
+                    console.warn("Three.js failed to load, using 2D canvas animation.");
+                    init2DFallback();
+                }
+            }, 3000);
         } else {
             console.warn("WebGL not supported, falling back to 2D canvas animation.");
             init2DFallback();
+        }
+        
+        // Initialize AOS if available
+        if (typeof AOS !== 'undefined') {
+            AOS.init({
+                duration: 800,
+                once: true,
+                offset: 50,
+                easing: 'ease-out-cubic',
+            });
         }
     } catch (error) {
         console.error("An error occurred during initialization:", error);
         document.body.style.backgroundColor = '#020204';
     }
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    initializeApp();
+}
