@@ -74,7 +74,82 @@ h2 {
     margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.8rem;
+    position: relative;
+    letter-spacing: 2px;
+}
+
+/* HUD Header Decoration: Status Light */
+h2::before {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background: var(--color-terminal-green);
+    box-shadow: 0 0 10px var(--color-terminal-green);
+    animation: blink-status 2s infinite;
+}
+
+/* HUD Header Decoration: System ID */
+h2::after {
+    content: '[ SYS.RDY ]';
+    position: absolute;
+    right: 0;
+    font-family: var(--font-pixel);
+    font-size: 1rem;
+    color: var(--color-terminal-dim);
+    letter-spacing: 1px;
+}
+
+/* Animated Tech Icons */
+.tech-icon {
+    margin-right: 0.5rem;
+    color: var(--color-terminal-amber);
+    display: inline-block;
+}
+
+.spin-slow {
+    animation: spin-cw 10s linear infinite;
+}
+
+.pulse-tech {
+    animation: pulse-tech 3s ease-in-out infinite;
+}
+
+@keyframes spin-cw {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse-tech {
+
+    0%,
+    100% {
+        opacity: 0.6;
+        text-shadow: 0 0 0 transparent;
+    }
+
+    50% {
+        opacity: 1;
+        text-shadow: 0 0 8px var(--color-terminal-amber);
+    }
+}
+
+@keyframes blink-status {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
 }
 
 h3 {
@@ -169,23 +244,59 @@ p {
     }
 }
 
-/* Component: Sections (Hardcore TUI Panels) */
+/* Component: Sections (Cyberpunk Window) */
 .tui-section {
-    background-color: var(--color-bg);
-    border: var(--border-sharp);
+    background-color: rgba(5, 5, 5, 0.7);
+    border: 1px solid var(--color-terminal-dim);
+    border-top: 1px solid var(--color-terminal-green);
+    /* Top highlight */
     padding: var(--spacing-md);
     margin-bottom: var(--spacing-md);
     position: relative;
-    box-shadow: 4px 4px 0px var(--color-terminal-dim);
-    /* Hard shadow */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    background-image:
+        linear-gradient(rgba(26, 77, 16, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26, 77, 16, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
 }
+
+/* Corner Brackets */
+.tui-section::before {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 15px;
+    height: 15px;
+    border-bottom: 2px solid var(--color-terminal-green);
+    border-right: 2px solid var(--color-terminal-green);
+}
+
+.tui-section::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 10px;
+    height: 10px;
+    border-top: 2px solid var(--color-terminal-green);
+    border-left: 2px solid var(--color-terminal-green);
+}
+
 
 /* Component: Header Profile */
 .profile-wrapper {
     position: relative;
-    display: inline-block;
+    display: block;
+    /* Flex item behavior */
+    width: 164px;
+    /* Force fit image + border */
+    height: 164px;
+    flex: none;
+    /* Prevent growing/shrinking */
+    margin-right: 2rem;
+    /* Spacing from text */
     overflow: visible;
-    /* Scan might faintly glow outside */
 }
 
 .profile-wrapper::after {
@@ -195,7 +306,7 @@ p {
     left: 0;
     width: 100%;
     height: 100%;
-    /* FaceID Scanner: A moving horizontal bar with a faint trail */
+    /* FaceID Scanner */
     background: linear-gradient(180deg,
             rgba(74, 246, 38, 0) 0%,
             rgba(74, 246, 38, 0.5) 50%,
@@ -207,12 +318,10 @@ p {
     animation: face-id-scan 3s ease-in-out infinite alternate;
     pointer-events: none;
     border-radius: 50%;
-    /* Match default profile radius */
     z-index: 2;
     box-shadow: inset 0 0 10px rgba(74, 246, 38, 0.1);
 }
 
-/* If profile is square, scan overlay should be too */
 .profile-wrapper:has(.profile-img.square)::after {
     border-radius: 0;
 }
@@ -233,17 +342,11 @@ p {
     object-fit: cover;
     border: 2px solid var(--color-terminal-green);
     border-radius: 50%;
-    /* Default to circle as requested */
     background: transparent;
-    /* Explicitly transparent */
     filter: grayscale(100%) contrast(120%);
     transition: all 0.3s ease;
     position: relative;
     z-index: 1;
-}
-
-.profile-img.square {
-    border-radius: 0;
 }
 
 .profile-img:hover {
@@ -251,7 +354,7 @@ p {
     border-color: var(--color-terminal-amber);
 }
 
-/* Interactive Elements */
+/* Interactive Elements (Buttons) */
 .btn {
     display: inline-block;
     background: transparent;
@@ -278,82 +381,104 @@ p {
     box-shadow: 1px 1px 0px var(--color-terminal-green);
 }
 
-/* Accessibility: Block Focus */
-:focus-visible {
-    outline: none;
-    background-color: var(--color-terminal-green) !important;
-    color: var(--color-bg) !important;
-    box-shadow: 0 0 0 2px var(--color-terminal-green);
+/* Visitor Intel Widget */
+.visitor-intel {
+    margin-top: 1rem;
+    font-family: var(--font-pixel);
+    font-size: 0.9rem;
+    color: var(--color-terminal-dim);
+    border-top: 1px dotted var(--color-terminal-dim);
+    padding-top: 0.5rem;
+    text-align: center;
+    width: 100%;
 }
 
-/* Scanlines & CRT Effects */
-#scanline-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: repeating-linear-gradient(0deg,
-            rgba(0, 0, 0, 0.15),
-            rgba(0, 0, 0, 0.15) 1px,
-            transparent 1px,
-            transparent 2px);
-    pointer-events: none;
-    z-index: 9999;
-    animation: scanline-roll 8s linear infinite;
-    opacity: 0.3;
+.intel-label {
+    display: block;
+    font-size: 0.7rem;
+    margin-bottom: 0.2rem;
+    color: var(--color-terminal-green);
+    opacity: 0.7;
 }
 
-@keyframes scanline-roll {
-    0% {
-        background-position: 0 0;
-    }
-
-    100% {
-        background-position: 0 100%;
-    }
+.intel-data {
+    color: var(--color-terminal-amber);
+    animation: pulse-tech 2s infinite;
 }
 
-/* Skills */
+/* Skills: Wireframe Box Style */
+/* Skills: Terminal Chip Style */
 .skill-tag {
     display: inline-block;
-    border: var(--border-dim);
+    background: rgba(26, 77, 16, 0.1);
+    /* Subtle solid fill */
+    border: 1px solid var(--color-terminal-green);
     color: var(--color-terminal-green);
     padding: 0.4rem 0.8rem;
-    margin: 0.25rem;
-    font-family: var(--font-pixel);
-    font-size: 1.1rem;
-    /* Increased size */
-    letter-spacing: 1px;
+    /* Slightly tighter padding */
+    margin: 0.4rem;
+    /* More distinct separation */
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    cursor: crosshair;
+    transition: all 0.2s ease;
+    text-shadow: none;
+    box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
+    /* Physical depth */
 }
 
 .skill-tag:hover {
-    background-color: var(--color-terminal-dim);
-    border-color: var(--color-terminal-green);
+    background-color: var(--color-terminal-green);
+    color: var(--color-bg);
+    box-shadow: 0 0 15px var(--color-terminal-green);
+    transform: translateY(-2px);
+    font-weight: bold;
 }
 
-/* Timeline */
+
+/* Timeline: Circuit Node Style */
 .timeline-item {
-    border-left: 2px solid var(--color-terminal-dim);
-    padding-left: 1.5rem;
+    border-left: 2px dotted var(--color-terminal-dim);
+    /* Circuit trace */
+    padding-left: 2rem;
     margin-left: 0.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
     position: relative;
+}
+
+/* Last item trace fade */
+.timeline-item:last-child {
+    border-image: linear-gradient(to bottom, var(--color-terminal-dim) 50%, transparent 100%) 1 100%;
+    border-left-style: solid;
 }
 
 .timeline-icon {
     position: absolute;
-    left: -2.35rem;
-    /* adjusted for solid border */
+    left: -1rem;
+    /* Center on line */
     top: 0;
-    width: 2rem;
-    height: 2rem;
+    width: 2.2rem;
+    height: 2.2rem;
     background: var(--color-bg);
-    border: var(--border-sharp);
+    border: 1px solid var(--color-terminal-green);
     color: var(--color-terminal-green);
     display: flex;
     align-items: center;
     justify-content: center;
+    transform: translateX(-50%);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    /* Hexagon */
+    z-index: 2;
+    box-shadow: 0 0 10px rgba(74, 246, 38, 0.1);
+    transition: all 0.3s ease;
+}
+
+.timeline-item:hover .timeline-icon {
+    background: var(--color-terminal-green);
+    color: var(--color-bg);
+    box-shadow: 0 0 15px var(--color-terminal-green);
+    transform: translateX(-50%) scale(1.1);
 }
 
 /* Security / Encrypted Data */
@@ -413,6 +538,24 @@ p {
     box-shadow: 8px 8px 0px var(--color-terminal-dim);
 }
 
+#system-alert {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 10002;
+    /* Above everything */
+    justify-content: center;
+    align-items: center;
+    display: none;
+}
+
+#system-alert.modal-visible {
+    display: flex;
+}
+
 .quiz-input {
     width: 100%;
     background: #111;
@@ -470,6 +613,10 @@ p {
 /* Utilities */
 .text-green {
     color: var(--color-terminal-green);
+}
+
+.text-red {
+    color: #ff3333;
 }
 
 .text-amber {

@@ -258,6 +258,9 @@ function setupQuizModal() {
                     setTimeout(() => Agents.sentinel.idle(), 2000);
                 }
 
+                // Start Session Timer
+                startSessionTimer();
+
                 setTimeout(() => {
                     closeModal();
 
@@ -491,12 +494,156 @@ class Agent {
     }
 }
 
+// --- Active Monitoring & Session Control ---
+
+/**
+ * Fetches visitor IP and Location data.
+ * Uses multiple fallbacks to ensure display.
+ */
+async function fetchVisitorIntel() {
+    const intelWidget = document.getElementById('visitor-intel');
+    const intelData = document.getElementById('intel-data');
+
+    // Visual scanning effect before fetch
+    if (intelWidget) intelWidget.classList.remove('hidden');
+
+    const textUpdate = (text, isError = false) => {
+        if (intelData) {
+            intelData.textContent = text;
+            intelData.classList.remove('blink');
+            intelData.style.color = isError ? 'var(--color-terminal-amber)' : 'var(--color-terminal-green)';
+        }
+    };
+
+    // List of free IP APIs to try
+    const services = [
+        'https://ipapi.co/json/',
+        'https://ipwho.is/'
+    ];
+
+    for (const service of services) {
+        try {
+            const response = await fetch(service);
+            if (!response.ok) throw new Error('Network response was not ok');
+
+            const data = await response.json();
+            const ip = data.ip || 'UNKNOWN';
+            const city = data.city || 'Unknown';
+
+            textUpdate(`IDENTITY: ${ip} // LOC: ${city.toUpperCase()}`);
+
+            // Update Sentinel
+            if (Agents && Agents.sentinel) {
+                Agents.sentinel.activeText = `TARGET: ${city.toUpperCase()}`;
+                Agents.sentinel.activate();
+                setTimeout(() => Agents.sentinel.idle('MONITORING'), 5000);
+            }
+
+            return; // Success, exit function
+        } catch (err) {
+            console.warn(`Fetch failed for ${service}:`, err);
+            // Loop continues to next service
+        }
+    }
+
+    // Fallback if all APIs fail (likely AdBlock or Local File execution)
+    textUpdate(':: ORIGIN_CLASSIFIED ::', true);
+    if (Agents && Agents.sentinel) Agents.sentinel.idle('TARGET: UNKNOWN');
+}
+
+/**
+ * Starts the 60s security session timer.
+ */
+let sessionInterval;
+function startSessionTimer() {
+    let timeLeft = 60;
+
+    // Clear any existing timer
+    if (sessionInterval) clearInterval(sessionInterval);
+
+    // Update Nexus (Network)
+    if (Agents && Agents.nexus) Agents.nexus.activate('SECURE_LINK ESTABLISHED');
+
+    sessionInterval = setInterval(() => {
+        timeLeft--;
+
+        // Update Cipher Agent with countdown
+        if (Agents && Agents.cipher) {
+            Agents.cipher.activeText = `SESSION: ${timeLeft}s`;
+            Agents.cipher.activate();
+            // Pulse red when low time
+            if (timeLeft < 10) Agents.cipher.element.classList.add('alert');
+        }
+
+        if (timeLeft <= 0) {
+            clearInterval(sessionInterval);
+            lockContent();
+        }
+    }, 1000);
+}
+
+/**
+ * Custom TUI Alert
+ */
+function showSystemAlert(msg) {
+    const alertModal = document.getElementById('system-alert');
+    const msgElem = document.getElementById('system-alert-msg');
+    const closeBtn = document.getElementById('close-alert-button');
+
+    if (alertModal && msgElem) {
+        msgElem.textContent = msg;
+        alertModal.classList.remove('modal-hidden');
+        alertModal.classList.add('modal-visible');
+
+        closeBtn.onclick = () => {
+            alertModal.classList.remove('modal-visible');
+            alertModal.classList.add('modal-hidden');
+        };
+    }
+}
+
+/**
+ * Re-locks the system after timeout.
+ */
+function lockContent() {
+    isAuthenticated = false;
+
+    // Visual Feedback - Custom TUI Modal
+    showSystemAlert('SESSION EXPIRED: Security measures re-engaged.');
+
+    // Re-lock all containers
+    document.querySelectorAll('.encrypted-container').forEach(container => {
+        container.classList.remove('decrypted');
+        const textSpan = container.querySelector('.encrypted-text');
+        const icon = container.querySelector('i');
+
+        // Restore encrypted look
+        textSpan.textContent = '[ ENCRYPTED_DATA ]';
+        textSpan.style.color = '#ff3333';
+        if (icon) icon.className = "fas fa-lock fa-fw";
+
+        // Remove interaction handlers
+        container.onclick = null;
+        container.title = "";
+    });
+
+    // Reset Agents
+    if (Agents.cipher) Agents.cipher.alert('SESSION TERMINATED');
+    if (Agents.nexus) Agents.nexus.idle('OFFLINE');
+    if (Agents.sentinel) Agents.sentinel.activeText = "SCANNING...";
+
+    // Clean reset of onclick handlers
+    // We reload the Setup to re-bind the original "Click to unlock" listeners
+    // This is safer than trying to manually reconstruct them
+    setupDecryptionEvents();
+}
+
 // --- Main Execution ---
 document.addEventListener('DOMContentLoaded', () => {
     try {
         calculateExperience();
         setupDecryptionEvents();
-        setupSourceProtection(); // Activate Security
+        setupSourceProtection();
         setupQuizModal();
         printConsoleWelcome();
         initHiddenTerminal();
@@ -504,14 +651,104 @@ document.addEventListener('DOMContentLoaded', () => {
         // Initialize Agents
         Agents.init();
 
-        // Title Typing Animation
+        // Start Surveillance immediately
+        fetchVisitorIntel();
+
+        // Title Typing Animation 
         const titleElement = document.querySelector('h1');
         if (titleElement) {
             const originalTitle = titleElement.textContent;
             typeWriter(titleElement, originalTitle, 50);
         }
 
+        // Initialize Matrix Scramble
+        initScrollDecryption();
+
     } catch (error) {
         console.error("Init Error:", error);
     }
 });
+
+/**
+ * Matrix/Hacker Scramble Effect
+ */
+function initScrollDecryption() {
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px"
+    };
+
+    const scrambleObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const element = entry.target;
+                if (!element.dataset.scrambled) {
+                    new HackerScramble(element);
+                    element.dataset.scrambled = "true"; // Ensure it runs once
+                }
+                scrambleObserver.unobserve(element);
+            }
+        });
+    }, observerOptions);
+
+    // Target text elements (excluding h1 which has typewriter)
+    document.querySelectorAll('p, h2, h3, h4, li, span.skill-tag').forEach(el => {
+        // Skip if inside specific interactive containers to avoid breaking them
+        if (el.closest('.encrypted-container') || el.closest('#terminal-output') || el.closest('#agent-dock')) return;
+
+        // Skip empty elements
+        if (el.textContent.trim().length === 0) return;
+
+        scrambleObserver.observe(el);
+    });
+}
+
+class HackerScramble {
+    constructor(el) {
+        this.el = el;
+        this.chars = '!<>-_\\/[]{}—=+*^?#________';
+        this.originalText = el.textContent;
+        this.update = this.update.bind(this);
+        this.frame = 0;
+        this.queue = [];
+
+        // Create the queue of resolving characters
+        for (let i = 0; i < this.originalText.length; i++) {
+            const char = this.originalText[i];
+            this.queue.push({
+                from: i,
+                to: i + 1,
+                start: Math.floor(Math.random() * 40),
+                char: char
+            });
+        }
+
+        cancelAnimationFrame(this.frameRequest);
+        this.update();
+    }
+
+    update() {
+        let output = '';
+        let complete = 0;
+
+        for (let i = 0, n = this.queue.length; i < n; i++) {
+            let { from, to, start, char } = this.queue[i];
+
+            if (this.frame >= start) {
+                complete++;
+                output += char;
+            } else {
+                output += this.chars[Math.floor(Math.random() * this.chars.length)];
+            }
+        }
+
+        this.el.textContent = output;
+
+        if (complete === this.queue.length) {
+            // Done
+        } else {
+            this.frameRequest = requestAnimationFrame(this.update);
+            this.frame++;
+        }
+    }
+}

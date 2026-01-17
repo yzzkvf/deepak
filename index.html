@@ -60,6 +60,11 @@
                     <button class="btn" id="show-quiz-button">
                         <i class="fas fa-file-arrow-down"></i> Download Resume
                     </button>
+                    <!-- Active Monitoring Widget -->
+                    <div id="visitor-intel" class="visitor-intel hidden">
+                        <span class="intel-label">:: SURVEILLANCE_LOG ::</span>
+                        <div id="intel-data" class="intel-data">SCANNING...</div>
+                    </div>
                 </div>
             </div>
         </header>
@@ -74,33 +79,38 @@
         </section>
 
         <section class="tui-section" data-aos="fade-up">
-            <h2><i class="fas fa-user-tie text-amber"></i> Profile Summary</h2>
+            <h2><i class="fas fa-id-card text-amber"></i> SYSTEM_IDENTITY</h2>
             <p>
-                A highly motivated and results-oriented mobile application developer with 13+ years of
-                experience in designing, developing, and deploying robust and user-friendly applications
-                for Android and iOS platforms. Proven ability to lead complex technical initiatives,
-                integrate emerging technologies, and deliver innovative solutions that enhance operational
+                <i class="fas fa-terminal tech-icon text-green"></i> A highly motivated and results-oriented mobile
+                application developer with 13+ years of experience in designing, developing, and deploying robust and
+                user-friendly applications for Android and iOS platforms.<br><br>
+                <i class="fas fa-code-branch tech-icon text-green"></i> Proven ability to lead complex technical
+                initiatives, integrate emerging technologies, and deliver innovative solutions that enhance operational
                 efficiency and user experience.
             </p>
         </section>
 
         <section class="tui-section" data-aos="fade-up" data-aos-delay="100">
-            <h2><i class="fas fa-star text-amber"></i> Career Highlights</h2>
-            <ul class="list-disc list-inside space-y-2 pl-4">
-                <li>Pioneered the adoption of Kotlin Multiplatform, creating successful cross-platform
-                    applications for Android, iOS, and Desktop.</li>
-                <li>Spearheaded the development and deployment of numerous internal applications for Dubai Police.</li>
-                <li>Successfully integrated National ID reading technology, NFC, and various sensor-based
-                    technologies into mobile applications.</li>
-                <li>Led multiple projects that streamlined manual processes through mobile app development.</li>
+            <h2><i class="fas fa-medal text-amber"></i> MISSION_LOGS</h2>
+            <ul class="fa-ul space-y-3 pl-1">
+                <li><span class="fa-li"><i class="fas fa-microchip tech-icon spin-slow"></i></span>Pioneered the
+                    adoption of Kotlin Multiplatform, creating successful cross-platform applications for Android, iOS,
+                    and Desktop.</li>
+                <li><span class="fa-li"><i class="fas fa-shield-alt tech-icon pulse-tech"></i></span>Spearheaded the
+                    development and deployment of numerous internal applications for Dubai Police.</li>
+                <li><span class="fa-li"><i class="fas fa-satellite-dish tech-icon"></i></span>Successfully integrated
+                    National ID reading technology, NFC, and various sensor-based technologies into mobile applications.
+                </li>
+                <li><span class="fa-li"><i class="fas fa-rocket tech-icon"></i></span>Led multiple projects that
+                    streamlined manual processes through mobile app development.</li>
             </ul>
         </section>
 
         <section class="tui-section" data-aos="fade-up" data-aos-delay="200">
-            <h2><i class="fas fa-cogs text-amber"></i> Skills Summary</h2>
+            <h2><i class="fas fa-memory text-amber"></i> SKILLS_MATRIX</h2>
             <div class="grid-2">
                 <div>
-                    <h3 class="text-amber mb-4">Core & Multiplatform</h3>
+                    <h3 class="text-amber mb-4"><i class="fas fa-layer-group"></i> CORE_MODULES</h3>
                     <p>
                         <span class="skill-tag">Kotlin Multiplatform</span>
                         <span class="skill-tag">Kotlin</span>
@@ -111,7 +121,7 @@
                     </p>
                 </div>
                 <div>
-                    <h3 class="text-amber mb-4">Frameworks & Libraries</h3>
+                    <h3 class="text-amber mb-4"><i class="fas fa-tools"></i> LIBS_&_FRAMEWORKS</h3>
                     <p>
                         <span class="skill-tag">Jetpack Compose</span>
                         <span class="skill-tag">SwiftUI</span>
@@ -127,19 +137,22 @@
         </section>
 
         <section class="tui-section" data-aos="fade-up" data-aos-delay="300">
-            <h2><i class="fas fa-briefcase text-amber"></i> Work Experience</h2>
+            <h2><i class="fas fa-history text-amber"></i> EXECUTION_HISTORY</h2>
 
             <div class="timeline-item">
                 <div class="timeline-icon">
-                    <i class="fas fa-building"></i>
+                    <i class="fas fa-building spin-slow"></i>
                 </div>
                 <h3 class="text-green">Senior System Development Specialist</h3>
                 <h4 class="text-muted">Dubai Police HQ (Full-time)</h4>
                 <p class="text-muted text-sm">December 2015 – Present</p>
-                <ul class="list-disc list-inside">
-                    <li>Led design & deployment of 15+ mobile apps.</li>
-                    <li>Pioneered Kotlin Multiplatform adoption.</li>
-                    <li>Integrated NFC & biometric technologies.</li>
+                <ul class="fa-ul space-y-2 mt-2">
+                    <li><span class="fa-li"><i class="fas fa-mobile-alt tech-icon"></i></span>Led design & deployment of
+                        15+ mobile apps.</li>
+                    <li><span class="fa-li"><i class="fas fa-project-diagram tech-icon"></i></span>Pioneered Kotlin
+                        Multiplatform adoption.</li>
+                    <li><span class="fa-li"><i class="fas fa-fingerprint tech-icon"></i></span>Integrated NFC &
+                        biometric technologies.</li>
                 </ul>
             </div>
 
@@ -206,6 +219,15 @@
                 <span class="agent-status" id="nexus-status">ONLINE</span>
             </div>
             <div class="agent-viz nexus-viz"></div>
+        </div>
+    </div>
+
+    <!-- System Alert Modal (Custom Replacement for window.alert) -->
+    <div id="system-alert" class="modal-hidden">
+        <div class="modal-content text-center">
+            <h3 class="text-red blink mb-4">⚠️ SECURITY PROTOCOL ⚠️</h3>
+            <p id="system-alert-msg" class="text-green mb-8"></p>
+            <button id="close-alert-button" class="btn w-full">ACKNOWLEDGE</button>
         </div>
     </div>
 
