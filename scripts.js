@@ -1,19 +1,48 @@
 // Initialize AOS for content animations on scroll
 AOS.init({
-    duration: 800,
+    duration: 500,
     once: true,
-    offset: 50,
-    easing: 'ease-out-cubic',
+    offset: 30,
+    easing: 'steps(8)', // Retro feel
 });
 
-// --- Page Content & Security Functions ---
+// --- TUI & Visual Effects ---
 
 /**
- * Calculates the number of years from a start date to the current date
- * and updates the content of the 'years-experience' element.
+ * Typewriter effect for text elements.
+ */
+function typeWriter(element, text, speed = 40, callback) {
+    let i = 0;
+    element.textContent = ''; // Clear existing
+    element.innerHTML = ''; // Clear any children
+
+    function type() {
+        if (i < text.length) {
+            element.textContent += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+        } else {
+            // Append blinking cursor block
+            const cursor = document.createElement('span');
+            cursor.className = 'msg-cursor';
+            cursor.style.display = 'inline-block';
+            cursor.style.width = '10px';
+            cursor.style.height = '1em';
+            cursor.style.background = 'var(--color-terminal-green)';
+            cursor.style.marginLeft = '5px';
+            cursor.style.animation = 'blink 1s step-end infinite';
+            element.appendChild(cursor);
+            if (callback) callback();
+        }
+    }
+    type();
+}
+
+/**
+ * Calculates experience years
  */
 function calculateExperience() {
-    const startDate = new Date(2011, 7, 1); // August 1, 2011
+    const startDate = new Date(2011, 7, 1);
     const currentDate = new Date();
     let years = currentDate.getFullYear() - startDate.getFullYear();
     const m = currentDate.getMonth() - startDate.getMonth();
@@ -27,594 +56,461 @@ function calculateExperience() {
 }
 
 /**
- * Handles the actual resume download after the quiz is solved.
- */
-function handleResumeDownload() {
-    const link = document.createElement('a');
-    link.href = 'resources/deepak_resume.pdf'; // Make sure this path is correct
-    link.download = 'deepak_resume.pdf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-
-/**
  * SECURITY: Decodes Base64 string.
- * @param {string} str The Base64 encoded string.
- * @returns {string} The decoded string.
  */
 function decode(str) {
     try {
         return atob(str);
     } catch (e) {
-        console.error("Failed to decode string:", e);
+        console.error("Failed to decode:", e);
         return '';
     }
 }
 
-/**
- * SECURITY: Sets up the scratch-to-reveal functionality for contact info.
- * The link only becomes active after a certain percentage is revealed.
- */
-function setupScratchCards() {
-    document.querySelectorAll('.scratch-container').forEach(container => {
-        const canvas = container.querySelector('.scratch-canvas');
-        const content = container.querySelector('.scratch-content');
-        const textSpan = content.querySelector('.contact-text');
-        const ctx = canvas.getContext('2d');
-        let isDrawing = false;
-        
-        textSpan.textContent = decode(content.dataset.value);
-        ctx.fillStyle = '#1C1C1E';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        container.dataset.revealed = 'false';
+// --- TUI Decryption Logic ---
 
-        const checkRevealPercentage = () => {
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const pixelData = imageData.data;
-            let transparentPixels = 0;
-            for (let i = 3; i < pixelData.length; i += 4) {
-                if (pixelData[i] === 0) {
-                    transparentPixels++;
-                }
+let isAuthenticated = false; // Global Auth State
+let pendingDecryptionTarget = null;
+let pendingActionType = null; // 'reveal' or 'download'
+
+function setupDecryptionEvents() {
+    document.querySelectorAll('.encrypted-container').forEach(container => {
+        container.addEventListener('click', () => {
+            // Unlocking logic if already authenticated
+            if (isAuthenticated && !container.classList.contains('decrypted')) {
+                decryptAndReveal(container, container.dataset.value);
+                return;
             }
-            const percentage = (transparentPixels / (canvas.width * canvas.height)) * 100;
-            if (percentage > 50) {
-                container.dataset.revealed = 'true';
-                canvas.style.transition = 'opacity 0.5s';
-                canvas.style.opacity = '0';
-            }
-        };
+            if (container.classList.contains('decrypted')) return;
 
-        const scratch = (x, y) => {
-            if (!isDrawing) return;
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.beginPath();
-            ctx.arc(x, y, 12, 0, Math.PI * 2);
-            ctx.fill();
-        };
-        
-        const startScratching = (e) => {
-            isDrawing = true;
-            const rect = e.target.getBoundingClientRect();
-            const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-            const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-            scratch(x, y);
-        };
-
-        const doScratch = (e) => {
-            if (!isDrawing) return;
-            e.preventDefault();
-            const rect = e.target.getBoundingClientRect();
-            const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-            const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-            scratch(x, y);
-        };
-
-        const stopScratching = () => {
-            if (isDrawing) {
-                isDrawing = false;
-                checkRevealPercentage();
-            }
-        };
-
-        canvas.addEventListener('mousedown', startScratching);
-        canvas.addEventListener('mousemove', doScratch);
-        canvas.addEventListener('mouseup', stopScratching);
-        canvas.addEventListener('mouseleave', stopScratching);
-        
-        canvas.addEventListener('touchstart', startScratching, { passive: true });
-        canvas.addEventListener('touchmove', doScratch, { passive: false });
-        canvas.addEventListener('touchend', stopScratching);
-
-        container.addEventListener('click', (e) => {
-            if (container.dataset.revealed !== 'true') {
-                 e.preventDefault();
-                 return;
-            }
-            const type = content.dataset.type;
-            const value = decode(content.dataset.value);
-            if (type === 'tel') window.location.href = `tel:${value}`;
-            if (type === 'mailto') window.location.href = `mailto:${value}`;
+            pendingDecryptionTarget = container;
+            pendingActionType = 'reveal';
+            openQuizModal();
         });
+    });
+
+    const downloadBtn = document.getElementById('show-quiz-button');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', () => {
+            if (isAuthenticated) {
+                // Instant download if authenticated
+                if (Agents && Agents.nexus) {
+                    Agents.nexus.activate('DOWNLOADING...');
+                    setTimeout(() => Agents.nexus.idle(), 3000);
+                }
+                triggerDownload();
+                return;
+            }
+            pendingDecryptionTarget = null;
+            pendingActionType = 'download';
+            openQuizModal();
+        });
+    }
+}
+
+function setupSourceProtection() {
+    // Disable Right Click
+    document.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        return false;
+    });
+
+    // Disable Keyboard Shortcuts for DevTools & Source
+    document.addEventListener('keydown', (e) => {
+        // F12
+        if (e.key === 'F12') {
+            e.preventDefault();
+            return false;
+        }
+
+        // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U (View Source)
+        if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
+            e.preventDefault();
+            return false;
+        }
+
+        if (e.ctrlKey && e.key === 'u') {
+            e.preventDefault();
+            return false;
+        }
+
+        // Mac Command alternatives (Cmd+Option+I/J/U)
+        if (e.metaKey && e.altKey && (e.key === 'i' || e.key === 'j' || e.key === 'u')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // Disable Image Dragging
+    document.querySelectorAll('img').forEach(img => {
+        img.addEventListener('dragstart', (e) => e.preventDefault());
     });
 }
 
-/**
- * Sets up and manages the quiz modal for resume download with random math puzzles.
- */
+function triggerDownload() {
+    const link = document.createElement('a');
+    link.href = 'resources/deepak_resume.pdf';
+    link.download = 'Deepak_Resume.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function decryptAndReveal(container, trueValue) {
+    const textSpan = container.querySelector('.encrypted-text');
+    const icon = container.querySelector('i');
+    const decoded = decode(trueValue);
+
+    // Decrypt Effect
+    let iterations = 0;
+    const chars = 'XYZ0123456789!@#$%^&*()';
+    const interval = setInterval(() => {
+        textSpan.textContent = textSpan.textContent.split('')
+            .map((letter, index) => {
+                if (index < iterations) {
+                    return decoded[index];
+                }
+                return chars[Math.floor(Math.random() * chars.length)];
+            })
+            .join('');
+
+        if (iterations >= decoded.length) {
+            clearInterval(interval);
+            textSpan.textContent = decoded;
+            container.classList.add('decrypted');
+
+            // Interaction enable
+            if (container.dataset.type === 'mailto') {
+                container.onclick = () => window.location.href = `mailto:${decoded}`;
+                container.title = "Click to send mail";
+            } else if (container.dataset.type === 'tel') {
+                container.onclick = () => window.location.href = `tel:${decoded}`;
+                container.title = "Click to call";
+            }
+
+            if (icon) icon.className = "fas fa-unlock fa-fw text-green";
+        }
+
+        iterations += 1 / 2;
+    }, 50);
+}
+
+// --- Quiz Modal Logic ---
+
 function setupQuizModal() {
     const modal = document.getElementById('quiz-modal');
-    const showButton = document.getElementById('show-quiz-button');
-    const closeButton = document.getElementById('close-quiz-button');
-    const submitButton = document.getElementById('submit-quiz-button');
+    const closeBtn = document.getElementById('close-quiz-button');
+    const submitBtn = document.getElementById('submit-quiz-button');
     const answerInput = document.getElementById('quiz-answer');
     const feedback = document.getElementById('quiz-feedback');
-    const questionText = modal.querySelector('p');
-    
-    let currentAnswer = null;
 
-    const puzzles = [
-        { question: "What is 7 * 8?", answer: "56" },
-        { question: "What is 12 + 19?", answer: "31" },
-        { question: "What is 100 - 45?", answer: "55" },
-        { question: "What is 5 * 5 + 10?", answer: "35" },
-        { question: "What is (10 - 2) * 4?", answer: "32" },
-    ];
+    let q1, n, expected;
 
-    const openModal = () => {
-        const randomPuzzle = puzzles[Math.floor(Math.random() * puzzles.length)];
-        questionText.textContent = randomPuzzle.question;
-        currentAnswer = randomPuzzle.answer;
-        
+    window.openQuizModal = function () {
+        if (isAuthenticated) return;
+
+        q1 = Math.floor(Math.random() * 20);
+        n = Math.floor(Math.random() * 10) + 1;
+        let seq = [q1, q1 + n, q1 + 2 * n];
+        expected = q1 + 3 * n;
+
+        const promptText = document.querySelector('#quiz-modal p');
+        if (promptText) promptText.textContent = `Security Sequence: ${seq.join(', ')}, [ ? ]`;
+
         modal.classList.remove('modal-hidden');
         modal.classList.add('modal-visible');
+        answerInput.value = '';
+        feedback.textContent = '';
         answerInput.focus();
     };
 
-    const closeModal = () => {
+    function closeModal() {
         modal.classList.remove('modal-visible');
-        setTimeout(() => modal.classList.add('modal-hidden'), 300);
-        feedback.textContent = '';
-        answerInput.value = '';
-    };
+        modal.classList.add('modal-hidden');
+    }
 
-    const checkAnswer = () => {
-        if (answerInput.value.trim() === currentAnswer) {
-            feedback.textContent = 'Correct! Downloading...';
-            feedback.style.color = '#22c55e';
-            setTimeout(() => {
-                handleResumeDownload();
-                closeModal();
-            }, 1000);
-        } else {
-            feedback.textContent = 'Not quite. Give it another try!';
-            feedback.style.color = '#ef4444';
-            answerInput.value = '';
-            answerInput.focus();
-        }
-    };
-    
-    showButton.addEventListener('click', openModal);
-    closeButton.addEventListener('click', closeModal);
-    submitButton.addEventListener('click', checkAnswer);
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) closeModal();
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
     });
-    answerInput.addEventListener('keyup', (event) => {
-        if(event.key === 'Enter') checkAnswer();
+
+    submitBtn.addEventListener('click', checkAnswer);
+    answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkAnswer();
     });
-}
 
+    function checkAnswer() {
+        // Backdoor: type 'admin' or 'recruit'
+        const val = answerInput.value.toLowerCase().trim();
 
-/**
- * SECURITY: Detects if the browser's developer tools are opened.
- */
-function setupDevToolsDetection() {
-    const threshold = 160;
-    let devtoolsOpen = false;
+        // VISUAL: Trigger Cipher Agent
+        if (Agents && Agents.cipher) Agents.cipher.activate('CRACKING...');
 
-    const checkDevTools = () => {
-        const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-        const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+        setTimeout(() => {
+            if (parseInt(val) === expected || val === 'recruit' || val === 'admin') {
+                isAuthenticated = true; // Set Global Auth
+                feedback.style.color = '#4af626';
+                feedback.textContent = 'ACCESS GRANTED. SYSTEM UNLOCKED.';
 
-        if (widthThreshold || heightThreshold) {
-            if (!devtoolsOpen) {
-                console.log('%cHOLD UP!', 'color: yellow; font-size: 24px; font-weight: bold;');
-                console.log('%cThis site is protected. If you have questions about my work, please feel free to reach out directly.', 'color: white; font-size: 16px;');
-                devtoolsOpen = true;
+                if (Agents && Agents.cipher) Agents.cipher.idle('ACCESS GRANTED');
+                if (Agents && Agents.sentinel) {
+                    Agents.sentinel.activate('VERIFIED');
+                    setTimeout(() => Agents.sentinel.idle(), 2000);
+                }
+
+                setTimeout(() => {
+                    closeModal();
+
+                    // Unlock ALL encrypted items AUTOMATICALLY
+                    document.querySelectorAll('.encrypted-container').forEach(c => {
+                        if (!c.classList.contains('decrypted')) {
+                            decryptAndReveal(c, c.dataset.value);
+                        }
+                    });
+
+                    // Perform the specific triggered action
+                    if (pendingActionType === 'download') {
+                        if (Agents && Agents.nexus) {
+                            Agents.nexus.activate('DOWNLOADING...');
+                            setTimeout(() => Agents.nexus.idle(), 3000);
+                        }
+                        triggerDownload();
+                    }
+                }, 600);
+            } else {
+                feedback.style.color = '#ff3333';
+                feedback.textContent = 'ACCESS DENIED.';
+                if (Agents && Agents.cipher) Agents.cipher.alert('FAILURE');
+                if (Agents && Agents.sentinel) Agents.sentinel.alert('BREACH DETECTED');
             }
-        } else {
-            devtoolsOpen = false;
-        }
-    };
-
-    setInterval(checkDevTools, 1000);
-    
-    window.addEventListener('keydown', event => {
-        if (event.key === 'F12' || (event.ctrlKey && event.shiftKey && ['I', 'J', 'C'].includes(event.key.toUpperCase()))) {
-            setTimeout(() => checkDevTools(), 500);
-        }
-    });
+        }, 500); // Effect delay
+    }
 }
 
-/**
- * SECURITY: Canvas fingerprinting as a deterrent.
- */
-function runSecurityDeterrents() {
-    try {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const txt = 'Protected by DSR';
-        ctx.textBaseline = "top";
-        ctx.font = "14px 'Arial'";
-        ctx.textBaseline = "alphabetic";
-        ctx.fillStyle = "#f60";
-        ctx.fillRect(125, 1, 62, 20);
-        ctx.fillStyle = "#069";
-        ctx.fillText(txt, 2, 15);
-        ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
-        ctx.fillText(txt, 4, 17);
-        const dataUrl = canvas.toDataURL();
-    } catch(e) {
-        // Fail silently
+// --- Easter Eggs & Features ---
+
+function printConsoleWelcome() {
+    console.clear();
+    const style = 'color: #4af626; font-family: monospace; font-size: 14px; font-weight: bold;';
+    const logo = `
+  _____   _____  _____  
+ |  __ \\ / ____||  __ \\ 
+ | |  | | (___  | |__) |
+ | |  | |\\___ \\ |  _  / 
+ | |__| |____) || | \\ \\ 
+ |_____/|_____/ |_|  \\_\\
+                        
+    `;
+    console.log(`%c${logo}`, style);
+    console.log('%cWelcome to the source code.', style);
+    console.log('%cLooking for something specific? Try typing "help" in the main window (no input focus needed).', 'color: #e6e6e6; font-family: monospace;');
+    console.log('%cGithub Repo: [Link Needed]', 'color: #ffca28; font-family: monospace;');
+}
+
+function initHiddenTerminal() {
+    const overlay = document.getElementById('terminal-overlay');
+    const input = document.getElementById('terminal-input');
+    const output = document.getElementById('terminal-output');
+
+    let buffer = '';
+
+    // Global listener for "help" or "ls" typing
+    document.addEventListener('keydown', (e) => {
+        // Ignore if user is typing in an input field (honeypot, quiz, or terminal itself)
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+        // Simple buffer for cheat codes
+        if (e.key.length === 1) {
+            buffer += e.key.toLowerCase();
+            if (buffer.length > 10) buffer = buffer.slice(-10); // keep last 10 chars
+
+            if (buffer.endsWith('help') || buffer.endsWith('ls')) {
+                toggleTerminal(true);
+                buffer = '';
+            }
+        }
+    });
+
+    function toggleTerminal(show) {
+        if (show) {
+            overlay.classList.add('open');
+            input.focus();
+        } else {
+            overlay.classList.remove('open');
+        }
+    }
+
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const cmd = input.value.trim().toLowerCase();
+            processCommand(cmd);
+            input.value = ''; // clear
+        } else if (e.key === 'Escape') {
+            toggleTerminal(false);
+        }
+    });
+
+    function processCommand(cmd) {
+        let response = '';
+        const args = cmd.split(' ');
+
+        // Print command
+        const cmdLine = document.createElement('div');
+        cmdLine.innerHTML = `<span class="text-amber">visitor@dsr-portfolio:~$</span> ${cmd}`;
+        output.appendChild(cmdLine);
+
+        // Process
+        switch (args[0]) {
+            case 'help':
+                response = `Available commands:
+  help       Show this help message
+  ls         List system files
+  cat [file] Read file content
+  whoami     Display current user info
+  contact    Request contact decryption
+  resume     Request resume download
+  clear      Clear terminal
+  exit       Close terminal
+  
+  * Note: Sensitive data requires security clearance pattern verification.`;
+                break;
+            case 'ls':
+                response = `total 42
+drwxr-xr-x  2 deepak  staff   64 Jan 17 21:00  .
+drwxr-xr-x  5 deepak  staff  160 Jan 17 21:00  ..
+-rw-r--r--  1 deepak  staff  2KB Jan 17 21:00  about_me.txt
+-rw-r--r--  1 deepak  staff  4KB Jan 17 21:00  skills.json
+-rw-r--r--  1 deepak  staff  1KB Jan 17 21:00  contact.enc
+-rwxr-xr-x  1 deepak  staff  5MB Jan 17 21:00  deepak_resume.pdf`;
+                break;
+            case 'cat':
+                if (!args[1]) {
+                    response = 'usage: cat [file]';
+                } else if (args[1] === 'contact.enc') {
+                    response = 'Accessing encrypted file... Security Clearance Required.';
+                    // Trigger UI auth for contact info
+                    document.querySelectorAll('.encrypted-container')[0].click();
+                } else if (args[1] === 'deepak_resume.pdf') {
+                    response = 'Initiating binary download... Security Clearance Required.';
+                    document.getElementById('show-quiz-button').click();
+                } else if (args[1] === 'about_me.txt') {
+                    response = 'Deepak Samuel Rajan. Full Stack Developer. Kotlin expert. Dubai Police Veteran.';
+                } else if (args[1] === 'skills.json') {
+                    response = '{ "core": ["Kotlin", "Java", "Swift"], "status": "Ready to Hire" }';
+                } else {
+                    response = `cat: ${args[1]}: No such file or directory`;
+                }
+                break;
+            case 'whoami':
+                response = 'visitor (guest privilege)\nScanning... Location: Internet.\nStatus: Hiring Manager / curious dev?';
+                break;
+            case 'clear':
+                output.innerHTML = '';
+                return;
+            case 'exit':
+                toggleTerminal(false);
+                return;
+            case 'contact':
+                response = 'Initiating decryption protocols... Check main UI.';
+                // We click the first one to trigger the modal, user can decrypt others after
+                const contact = document.querySelector('.encrypted-container:not(.decrypted)');
+                if (contact) contact.click();
+                else response = 'Contact info already decrypted.';
+                break;
+            case 'resume':
+                response = 'Initiating download...';
+                document.getElementById('show-quiz-button').click();
+                break;
+            default:
+                if (cmd !== '') response = `bash: ${cmd}: command not found`;
+        }
+
+        if (response) {
+            const resDiv = document.createElement('div');
+            resDiv.className = 'text-green';
+            resDiv.style.whiteSpace = 'pre-wrap';
+            resDiv.textContent = response;
+            output.appendChild(resDiv);
+        }
+
+        // Scroll to bottom
+        overlay.scrollTop = overlay.scrollHeight;
     }
 }
 
 
-// --- Utility Function for Optimization ---
+// --- AI Agent System ---
 
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
+const Agents = {
+    sentinel: null,
+    cipher: null,
+    nexus: null,
+
+    init() {
+        this.sentinel = new Agent('sentinel', 'SCANNING...', 'SYSTEM SECURE');
+        this.cipher = new Agent('cipher', 'DECRYPTING...', 'IDLE');
+        this.nexus = new Agent('nexus', 'UPLINK ACTIVE', 'ONLINE');
+
+        // Initial Sentinel Scan
+        this.sentinel.activate();
+        setTimeout(() => {
+            this.sentinel.idle();
+        }, 2000);
+    }
 };
 
-/**
- * Checks for WebGL support in the browser.
- * @returns {boolean} True if WebGL is supported, false otherwise.
- */
-function supportsWebGL() {
-    try {
-        const canvas = document.createElement('canvas');
-        return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
-    } catch (e) {
-        return false;
+class Agent {
+    constructor(id, activeText, idleText) {
+        this.id = id;
+        this.element = document.getElementById(`agent-${id}`);
+        this.statusElement = this.element ? this.element.querySelector('.agent-status') : null;
+        this.activeText = activeText;
+        this.idleText = idleText;
+    }
+
+    activate(textOverride = null) {
+        if (!this.element) return;
+        this.element.classList.add('active');
+        this.element.classList.remove('alert');
+        if (this.statusElement) this.statusElement.textContent = textOverride || this.activeText;
+    }
+
+    idle(textOverride = null) {
+        if (!this.element) return;
+        this.element.classList.remove('active');
+        this.element.classList.remove('alert');
+        if (this.statusElement) this.statusElement.textContent = textOverride || this.idleText;
+    }
+
+    alert(text) {
+        if (!this.element) return;
+        this.element.classList.add('active'); // Pulse
+        this.element.classList.add('alert'); // Red
+        if (this.statusElement) this.statusElement.textContent = text;
+        setTimeout(() => this.idle(), 3000);
     }
 }
-
-
-// --- Animation Systems (WebGL and 2D Fallback) ---
-
-const canvas = document.getElementById('space-canvas');
-let animationFrameId;
-
-// --- WebGL 3D Space Experience ---
-function initWebGLSpace() {
-    if (typeof THREE === 'undefined') {
-        console.error("Three.js is not loaded. Falling back to 2D.");
-        init2DFallback();
-        return;
-    }
-
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x000000, 0.0007);
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 4000);
-    camera.position.z = 10;
-
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
-    scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
-    directionalLight.position.set(5, 3, 5);
-    scene.add(directionalLight);
-
-    const starMaterials = [
-        new THREE.PointsMaterial({ color: 0xffffff, size: 0.7, opacity: 0.8, transparent: true }),
-        new THREE.PointsMaterial({ color: 0xffffff, size: 1.5, map: createStarTexture(), blending: THREE.AdditiveBlending, transparent: true, opacity: 0.5 })
-    ];
-    const starField1 = new THREE.Points(createStarGeometry(15000), starMaterials[0]);
-    const starField2 = starField1.clone();
-    const brightStarField1 = new THREE.Points(createStarGeometry(200), starMaterials[1]);
-    const brightStarField2 = brightStarField1.clone();
-    starField1.position.z = 0;
-    starField2.position.z = -2000;
-    brightStarField1.position.z = 0;
-    brightStarField2.position.z = -2000;
-    scene.add(starField1, starField2, brightStarField1, brightStarField2);
-    
-    let planets = [];
-    let asteroids = [];
-    let constellations = [];
-    
-    const clock = new THREE.Clock();
-    let lastSpawnTime = { planet: 0, asteroid: 0, constellation: 0 };
-    const SPAWN_INTERVAL = { planet: 25000, asteroid: 35000, constellation: 70000 };
-    
-    function animate() {
-        animationFrameId = requestAnimationFrame(animate);
-        const delta = clock.getDelta();
-        const time = clock.getElapsedTime();
-
-        // ** GENTLE, SMOOTH AUTOMATIC CAMERA PAN (ACCESSIBILITY FOCUSED) **
-        camera.position.x = Math.sin(time * 0.02) * 0.5;
-        camera.position.y = Math.cos(time * 0.015) * 0.5;
-        camera.lookAt(0, 0, 0);
-        
-        // ** SEAMLESS ENDLESS STARFIELD **
-        starField1.position.z += delta * 20; // Slower speed
-        starField2.position.z += delta * 20;
-        if (starField1.position.z > 2000) starField1.position.z -= 4000;
-        if (starField2.position.z > 2000) starField2.position.z -= 4000;
-        
-        brightStarField1.position.z = starField1.position.z;
-        brightStarField2.position.z = starField2.position.z;
-
-        // ** RARE, DYNAMIC OBJECT SPAWNING **
-        if (time > lastSpawnTime.planet + SPAWN_INTERVAL.planet / 1000) {
-            if (planets.length < 2) createAndAddPlanet(); // Reduced max planets
-            lastSpawnTime.planet = time;
-        }
-        if (time > lastSpawnTime.asteroid + SPAWN_INTERVAL.asteroid / 1000) {
-            if (asteroids.length < 1) createAndAddAsteroidBelt();
-            lastSpawnTime.asteroid = time;
-        }
-        if (time > lastSpawnTime.constellation + SPAWN_INTERVAL.constellation / 1000) {
-            if (constellations.length < 1) createAndAddConstellation();
-            lastSpawnTime.constellation = time;
-        }
-        
-        // ** UPDATE AND CLEANUP DYNAMIC OBJECTS **
-        [...planets, ...asteroids, ...constellations].forEach(obj => {
-            obj.position.add(obj.userData.velocity);
-            obj.rotation.y += obj.userData.rotationSpeed;
-            if(obj.position.z > camera.position.z + 500) {
-                scene.remove(obj);
-                if (planets.includes(obj)) planets = planets.filter(p => p !== obj);
-                if (asteroids.includes(obj)) asteroids = asteroids.filter(a => a !== obj);
-                if (constellations.includes(obj)) constellations = constellations.filter(c => c !== obj);
-            }
-        });
-
-        renderer.render(scene, camera);
-    }
-    animate();
-
-    function createStarGeometry(count) {
-        const vertices = [];
-        for (let i = 0; i < count; i++) {
-            vertices.push(THREE.MathUtils.randFloatSpread(2000));
-            vertices.push(THREE.MathUtils.randFloatSpread(2000));
-            vertices.push(THREE.MathUtils.randFloatSpread(2000));
-        }
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-        return geometry;
-    }
-
-    function createStarTexture() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 64; canvas.height = 64;
-        const ctx = canvas.getContext('2d');
-        const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-        gradient.addColorStop(0, 'rgba(255,255,255,0.8)');
-        gradient.addColorStop(0.2, 'rgba(255,255,255,0.5)');
-        gradient.addColorStop(0.4, 'rgba(200,220,255,0.2)');
-        gradient.addColorStop(1, 'rgba(200,220,255,0)');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0,0,64,64);
-        return new THREE.CanvasTexture(canvas);
-    }
-
-    function createAndAddPlanet() {
-        const planetType = Math.random();
-        let planet;
-        if (planetType < 0.4) planet = createRockyPlanet();
-        else if (planetType < 0.8) planet = createGasGiant();
-        else planet = createIcyPlanet();
-        resetObjectPosition(planet);
-        planets.push(planet);
-        scene.add(planet);
-    }
-    
-    function createRockyPlanet() {
-        const size = THREE.MathUtils.randFloat(10, 30);
-        const geometry = new THREE.SphereGeometry(size, 32, 32);
-        const texture = new THREE.CanvasTexture(generateProceduralTexture('rocky'));
-        const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.8 });
-        return new THREE.Mesh(geometry, material);
-    }
-
-    function createGasGiant() {
-        const size = THREE.MathUtils.randFloat(40, 70);
-        const geometry = new THREE.SphereGeometry(size, 32, 32);
-        const texture = new THREE.CanvasTexture(generateProceduralTexture('gas'));
-        const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.9 });
-        const planet = new THREE.Mesh(geometry, material);
-        if (Math.random() > 0.5) {
-            const ringGeom = new THREE.RingGeometry(size * 1.2, size * 1.8, 64);
-            const ringMat = new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
-            const ring = new THREE.Mesh(ringGeom, ringMat);
-            ring.rotation.x = Math.random() * Math.PI;
-            planet.add(ring);
-        }
-        return planet;
-    }
-    
-    function createIcyPlanet() {
-        const size = THREE.MathUtils.randFloat(15, 40);
-        const geometry = new THREE.SphereGeometry(size, 32, 32);
-        const texture = new THREE.CanvasTexture(generateProceduralTexture('icy'));
-        const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.2, metalness: 0.1 });
-        return new THREE.Mesh(geometry, material);
-    }
-
-    function generateProceduralTexture(type) {
-        const canvas = document.createElement('canvas');
-        canvas.width = 512; canvas.height = 256;
-        const ctx = canvas.getContext('2d');
-        if (type === 'rocky') {
-            const baseColor = new THREE.Color().setHSL(Math.random() * 0.1 + 0.05, 0.5, 0.4);
-            ctx.fillStyle = `#${baseColor.getHexString()}`;
-            ctx.fillRect(0, 0, 512, 256);
-            for (let i = 0; i < 2000; i++) {
-                ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.2})`;
-                ctx.beginPath();
-                ctx.arc(Math.random() * 512, Math.random() * 256, Math.random() * 5, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        } else if (type === 'gas') {
-            const c1 = new THREE.Color().setHSL(Math.random() * 0.1 + 0.1, 0.6, 0.6);
-            const c2 = new THREE.Color().setHSL(Math.random() * 0.1 + 0.05, 0.5, 0.5);
-            for(let i=0; i<15; i++) {
-                ctx.fillStyle = i % 2 === 0 ? `#${c1.getHexString()}` : `#${c2.getHexString()}`;
-                ctx.fillRect(0, i * (256/15), 512, 256/15);
-            }
-        } else { // icy
-            const baseColor = new THREE.Color().setHSL(Math.random() * 0.1 + 0.55, 0.8, 0.8);
-            ctx.fillStyle = `#${baseColor.getHexString()}`;
-            ctx.fillRect(0, 0, 512, 256);
-            for (let i = 0; i < 500; i++) {
-                ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.3})`;
-                ctx.beginPath();
-                ctx.arc(Math.random() * 512, Math.random() * 256, Math.random() * 10, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-        return canvas;
-    }
-
-    function createAndAddAsteroidBelt() {
-        const count = 150;
-        const belt = new THREE.Group();
-        const baseGeometry = new THREE.IcosahedronGeometry(1, 0);
-
-        for(let i=0; i < count; i++) {
-            const geometry = baseGeometry.clone();
-            const positionAttribute = geometry.getAttribute('position');
-            const vertex = new THREE.Vector3();
-            for (let j = 0; j < positionAttribute.count; j++){
-                vertex.fromBufferAttribute(positionAttribute, j);
-                vertex.x += Math.random() * 0.4 - 0.2;
-                vertex.y += Math.random() * 0.4 - 0.2;
-                vertex.z += Math.random() * 0.4 - 0.2;
-                positionAttribute.setXYZ(j, vertex.x, vertex.y, vertex.z);
-            }
-            const material = new THREE.MeshStandardMaterial({color: new THREE.Color().setHSL(0,0,Math.random()*0.3 + 0.2), roughness: 0.9});
-            const asteroid = new THREE.Mesh(geometry, material);
-            asteroid.position.set(THREE.MathUtils.randFloatSpread(80), THREE.MathUtils.randFloatSpread(80), THREE.MathUtils.randFloatSpread(80));
-            asteroid.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
-            belt.add(asteroid);
-        }
-        resetObjectPosition(belt);
-        asteroids.push(belt);
-        scene.add(belt);
-    }
-    
-    function createAndAddConstellation() {
-        const group = new THREE.Group();
-        const starCount = THREE.MathUtils.randInt(5, 10);
-        const starMaterial = new THREE.MeshBasicMaterial({ color: 0x99ccff, emissive: 0x99ccff, transparent: true, opacity: 0.7 });
-        for (let i = 0; i < starCount; i++) {
-            const starGeom = new THREE.SphereGeometry(Math.random() * 0.5 + 0.3, 8, 8);
-            const star = new THREE.Mesh(starGeom, starMaterial);
-            star.position.set(THREE.MathUtils.randFloatSpread(100), THREE.MathUtils.randFloatSpread(100), 0);
-            group.add(star);
-        }
-        resetObjectPosition(group);
-        constellations.push(group);
-        scene.add(group);
-    }
-
-
-    function resetObjectPosition(obj) {
-         obj.position.z = THREE.MathUtils.randFloat(-3000, -4000);
-         obj.position.x = THREE.MathUtils.randFloatSpread(1500);
-         obj.position.y = THREE.MathUtils.randFloatSpread(800);
-         obj.userData.velocity = new THREE.Vector3(0, 0, THREE.MathUtils.randFloat(1.5, 4));
-         obj.userData.rotationSpeed = Math.random() * 0.005;
-    }
-
-    window.addEventListener('resize', debounce(() => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    }, 250));
-}
-
-// --- 2D Canvas Fallback ---
-function init2DFallback() {
-    const ctx = canvas.getContext('2d');
-    let stars = Array.from({ length: 600 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        radius: Math.random() * 1.5,
-        alpha: Math.random(),
-        speed: Math.random() * 0.2 + 0.1
-    }));
-    
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        stars.forEach(star => {
-            star.x = Math.random() * canvas.width;
-            star.y = Math.random() * canvas.height;
-        });
-    }
-    resizeCanvas();
-
-    function animate2D() {
-        animationFrameId = requestAnimationFrame(animate2D);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-        
-        stars.forEach(star => {
-            star.y -= star.speed;
-            if (star.y < 0) {
-                star.y = canvas.height;
-                star.x = Math.random() * canvas.width;
-            }
-            ctx.globalAlpha = star.alpha;
-            ctx.beginPath();
-            ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-            ctx.fill();
-        });
-        ctx.globalAlpha = 1;
-    }
-    animate2D();
-    
-    window.addEventListener('resize', debounce(resizeCanvas, 250));
-}
-
 
 // --- Main Execution ---
 document.addEventListener('DOMContentLoaded', () => {
     try {
         calculateExperience();
-        setupScratchCards();
+        setupDecryptionEvents();
         setupQuizModal();
-        setupDevToolsDetection();
-        runSecurityDeterrents();
-        
-        document.addEventListener('contextmenu', event => event.preventDefault());
+        printConsoleWelcome();
+        initHiddenTerminal();
 
-        if (supportsWebGL()) {
-            initWebGLSpace();
-        } else {
-            console.warn("WebGL not supported, falling back to 2D canvas animation.");
-            init2DFallback();
+        // Initialize Agents
+        Agents.init();
+
+        // Title Typing Animation
+        const titleElement = document.querySelector('h1');
+        if (titleElement) {
+            const originalTitle = titleElement.textContent;
+            typeWriter(titleElement, originalTitle, 50);
         }
+
     } catch (error) {
-        console.error("An error occurred during initialization:", error);
-        document.body.style.backgroundColor = '#020204';
+        console.error("Init Error:", error);
     }
 });

@@ -2,286 +2,230 @@
 <html lang="en">
 
 <head>
-        <meta charset="utf-8" />
-        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-        <!-- This meta tag sets the browser's UI color to match the site's dark theme -->
-        <meta name="theme-color" content="#020204">
-        <title>Deepak Samuel Rajan - Full Stack Developer</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-                xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-                referrerpolicy="no-referrer" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap"
-                rel="stylesheet" />
-        <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-        <link href="styles.css" rel="stylesheet" />
-        <!-- ADDED THREE.JS LIBRARY FOR WEBGL -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="theme-color" content="#050505">
+    <title>Deepak Samuel Rajan - Full Stack Developer</title>
+    <!-- Removed Tailwind CDN -->
+    <link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        referrerpolicy="no-referrer" rel="stylesheet" />
+    <link href="styles.css" rel="stylesheet" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
 </head>
 
-<body class="bg-gray-900 text-gray-200 leading-relaxed">
-        <!-- Canvas for the WebGL animation -->
-        <canvas id="space-canvas"></canvas>
-
-        <!-- Honeypot field for bot detection -->
-        <input type="text" name="honeypot" class="honeypot" aria-hidden="true">
-
-        <div class="main-content max-w-5xl mx-auto p-4 md:p-8 lg:p-12 pt-24">
-                <header class="flex flex-col md:flex-row items-center justify-between mb-12 gap-8" data-aos="fade-down">
-                        <div class="flex-shrink-0">
-                                <img alt="Deepak Samuel Rajan"
-                                        class="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-teal-300 shadow-md"
-                                        src="resources/profile-pic.jpeg" />
-                        </div>
-                        <div class="text-center md:text-left flex-grow">
-                                <h1 class="text-4xl md:text-5xl font-bold text-orange-400 mb-2">Deepak Samuel Rajan</h1>
-                                <p class="text-xl md:text-2xl text-teal-300 font-medium mb-6">Full Stack Developer with
-                                        Cross-Platform Expertise</p>
-                                <div
-                                        class="contact-info flex flex-col sm:flex-row sm:flex-wrap justify-center md:justify-start items-center gap-x-6 gap-y-2 text-sm md:text-base">
-                                        <!-- Scratch-to-reveal contact items -->
-                                        <div class="scratch-container">
-                                                <div class="scratch-content" data-value="Kzk3MTUyNDEyODg4NA=="
-                                                        data-type="tel">
-                                                        <i class="fas fa-phone fa-fw text-green-400"></i>
-                                                        <span class="contact-text"></span>
-                                                </div>
-                                                <canvas class="scratch-canvas" width="160" height="24"></canvas>
-                                        </div>
-                                        <div class="scratch-container">
-                                                <div class="scratch-content" data-value="bWFpbGRzcmFqYW5AZ21haWwuY29t"
-                                                        data-type="mailto">
-                                                        <i class="fas fa-envelope fa-fw text-green-400"></i>
-                                                        <span class="contact-text"></span>
-                                                </div>
-                                                <canvas class="scratch-canvas" width="200" height="24"></canvas>
-                                        </div>
-                                        <a class="hover:text-teal-400" href="https://linkedin.com/in/yzzkvf/"
-                                                id="linkedin-link" rel="noopener noreferrer" target="_blank">
-                                                <i class="fab fa-linkedin fa-fw text-green-400"></i> LinkedIn Profile
-                                        </a>
-                                </div>
-                                <div class="menu-controls flex justify-center items-center gap-4">
-                                        <button class="menu-button" id="show-quiz-button">
-                                                <i class="fas fa-file-arrow-down"></i> Download Resume
-                                        </button>
-                                </div>
-                        </div>
-                </header>
-
-                <!-- Brief Introduction -->
-                <section class="mb-10 p-6 pastel-section rounded-lg shadow-md" data-aos="fade-up">
-                        <p class="text-center text-lg italic text-gray-300">
-                                A seasoned developer with a passion for building elegant, efficient solutions across
-                                mobile, desktop, and server-side platforms, specializing in the Kotlin ecosystem and
-                                modern cross-platform technologies.
-                        </p>
-                </section>
-
-                <section class="mb-10 p-6 pastel-section rounded-lg shadow-md" data-aos="fade-up">
-                        <h2 class="pastel-heading"><i class="fas fa-user-tie pastel-accent"></i> Profile Summary</h2>
-                        <p class="text-base">
-                                A highly motivated and results-oriented mobile application developer with 13+ years of
-                                experience in designing, developing, and deploying robust and user-friendly applications
-                                for
-                                Android and iOS platforms. Proven ability to lead complex technical initiatives,
-                                integrate
-                                emerging technologies, and deliver innovative solutions that enhance operational
-                                efficiency
-                                and user experience. Passionate about creating impactful mobile experiences through
-                                clean
-                                code, efficient architectures, and user-centric design.
-                        </p>
-                </section>
-                <section class="mb-10 p-6 pastel-section rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="100">
-                        <h2 class="pastel-heading"><i class="fas fa-star pastel-accent"></i> Career Highlights</h2>
-                        <ul class="list-disc list-inside space-y-2 pl-4">
-                                <li>Pioneered the adoption of Kotlin Multiplatform, creating successful cross-platform
-                                        applications for Android, iOS, and Desktop, resulting in significant cost and
-                                        time
-                                        savings.</li>
-                                <li>Spearheaded the development and deployment of numerous internal applications,
-                                        significantly improving operational efficiency and user experience within Dubai
-                                        Police.
-                                </li>
-                                <li>Successfully integrated National ID reading technology, NFC, and various
-                                        sensor-based
-                                        technologies into mobile applications.</li>
-                                <li>Led multiple projects that streamlined manual processes through mobile app
-                                        development,
-                                        increasing organizational productivity and efficiency.</li>
-                                <li>Consistently demonstrated a user-centric approach by conducting research and
-                                        gathering user
-                                        feedback, leading to improved adoption rates and user satisfaction.</li>
-                        </ul>
-                </section>
-                <section class="mb-10 p-6 pastel-section rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="200">
-                        <h2 class="pastel-heading"><i class="fas fa-cogs pastel-accent"></i> Skills Summary</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                        <h3 class="text-orange-400 font-semibold mb-2">Core & Multiplatform</h3>
-                                        <p>
-                                                <span class="skill-tag">Kotlin Multiplatform (KMP)</span>
-                                                <span class="skill-tag">Kotlin</span>
-                                                <span class="skill-tag">Java</span>
-                                                <span class="skill-tag">Swift</span>
-                                                <span class="skill-tag">Go (Golang)</span>
-                                                <span class="skill-tag">Rust</span>
-                                                <span class="skill-tag">Android</span>
-                                                <span class="skill-tag">iOS</span>
-                                        </p>
-                                </div>
-                                <div>
-                                        <h3 class="text-orange-400 font-semibold mb-2">Frameworks & Libraries</h3>
-                                        <p>
-                                                <span class="skill-tag">Jetpack Compose</span>
-                                                <span class="skill-tag">Android Jetpack</span>
-                                                <span class="skill-tag">SwiftUI</span>
-                                                <span class="skill-tag">UIKit</span>
-                                                <span class="skill-tag">Ktor</span>
-                                                <span class="skill-tag">SQLDelight</span>
-                                                <span class="skill-tag">kotlinx.serialization</span>
-                                                <span class="skill-tag">Retrofit</span>
-                                                <span class="skill-tag">OkHttp</span>
-                                                <span class="skill-tag">Firebase</span>
-                                                <span class="skill-tag">Glide</span>
-                                                <span class="skill-tag">Coil</span>
-                                                <span class="skill-tag">Core Data</span>
-                                                <span class="skill-tag">Room</span>
-                                                <span class="skill-tag">Realm</span>
-                                                <span class="skill-tag">Alamofire</span>
-                                                <span class="skill-tag">Kotlin Coroutines</span>
-                                                <span class="skill-tag">Koin</span>
-                                                <span class="skill-tag">Hilt</span>
-                                                <span class="skill-tag">Decompose</span>
-                                                <span class="skill-tag">Kamel</span>
-                                                <span class="skill-tag">Horologist</span>
-                                        </p>
-                                </div>
-                                <div>
-                                        <h3 class="text-orange-400 font-semibold mb-2">Architecture & Tools</h3>
-                                        <p>
-                                                <span class="skill-tag">MVVM</span>
-                                                <span class="skill-tag">MVI</span>
-                                                <span class="skill-tag">MVC</span>
-                                                <span class="skill-tag">VIPER</span>
-                                                <span class="skill-tag">Clean Architecture</span>
-                                                <span class="skill-tag">RESTful APIs</span>
-                                                <span class="skill-tag">Git</span>
-                                                <span class="skill-tag">Jira</span>
-                                                <span class="skill-tag">Android Studio</span>
-                                                <span class="skill-tag">Xcode</span>
-                                        </p>
-                                </div>
-                                <div>
-                                        <h3 class="text-orange-400 font-semibold mb-2">Other Expertise</h3>
-                                        <p>
-                                                <span class="skill-tag">NFC Integration</span>
-                                                <span class="skill-tag">National ID Integration</span>
-                                                <span class="skill-tag">Sensor-Based Tech</span>
-                                                <span class="skill-tag">MRZ Reading (ML Kit/Vision)</span>
-                                                <span class="skill-tag">Bluetooth LE</span>
-                                                <span class="skill-tag">Grabba Devices</span>
-                                        </p>
-                                </div>
-                        </div>
-                </section>
-
-                <section class="mb-10 p-6 pastel-section rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="300">
-                        <h2 class="pastel-heading"><i class="fas fa-briefcase pastel-accent"></i> Work Experience</h2>
-                        <div class="timeline-item">
-                                <div class="timeline-icon">
-                                        <i class="fas fa-building"></i>
-                                </div>
-                                <h3 class="text-lg font-semibold">Senior System Development Specialist</h3>
-                                <h4 class="text-base font-normal text-gray-400">Dubai Police HQ (Full-time)</h4>
-                                <p class="sub-role-dates">December 2015 – Present</p>
-                                <ul class="list-disc list-inside space-y-2 pl-4">
-                                        <li>Led the design, development, and deployment on Google Enterprise PlayStore
-                                                and
-                                                Citrix Managed App Store of over 15 mobile applications for Android and
-                                                iOS.
-                                        </li>
-                                        <li>Pioneered the adoption of Kotlin Multiplatform, enabling efficient
-                                                cross-platform development and reducing development time and costs.</li>
-                                        <li>Successfully integrated NFC, sensor-based technologies, Grabba devices, and
-                                                national ID reading technology into mobile applications.</li>
-                                        <li>Improved organizational productivity and efficiency by leading projects that
-                                                streamlined manual processes through mobile app development.</li>
-                                </ul>
-                        </div>
-                        <div class="timeline-item">
-                                <div class="timeline-icon">
-                                        <i class="fas fa-laptop-code"></i>
-                                </div>
-                                <h3 class="text-lg font-semibold">Technical Lead</h3>
-                                <h4 class="text-base font-normal text-gray-400">R2 International</h4>
-                                <p class="sub-role-dates">August 2011 – November 2015</p>
-                                <ul class="list-disc list-inside space-y-2 pl-4">
-                                        <li>Led the design, development, and deployment of mobile applications for
-                                                European
-                                                clients, demonstrating experience in international markets.</li>
-                                        <li>Managed a team of mobile developers, overseeing the development, updates,
-                                                and
-                                                release of new features for various applications.</li>
-                                        <li>Developed a BLE technology app prototype for a Swedish company using the
-                                                Estimote SDK.</li>
-                                </ul>
-                        </div>
-                </section>
-
-                <section class="mb-10 p-6 pastel-section rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="400">
-                        <h2 class="pastel-heading"><i class="fas fa-graduation-cap pastel-accent"></i> Education</h2>
-                        <div class="timeline-item">
-                                <div class="timeline-icon">
-                                        <i class="fas fa-university"></i>
-                                </div>
-                                <h3 class="text-lg font-semibold">Master of Computer Applications (MCA)</h3>
-                                <h4 class="text-base font-normal text-gray-400">Bangalore University, Karnataka, India
-                                </h4>
-                                <p class="degree-details-light-mode">2011</p>
-                        </div>
-                        <div class="timeline-item">
-                                <div class="timeline-icon">
-                                        <i class="fas fa-university"></i>
-                                </div>
-                                <h3 class="text-lg font-semibold">Bachelor of Science (B.Sc.), Electronics and Computer
-                                        Maintenance</h3>
-                                <h4 class="text-base font-normal text-gray-400">RDVV University, Madhya Pradesh, India
-                                </h4>
-                                <p class="degree-details-light-mode">2008</p>
-                        </div>
-                </section>
-
-                <section class="p-6 pastel-section rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="500">
-                        <h2 class="pastel-heading"><i class="fas fa-heart pastel-accent"></i> Personal Interests</h2>
-                        <ul class="list-disc list-inside space-y-2 pl-4">
-                                <li>Exploring advancements in AI and language models, alongside cross-platform and
-                                        server-side technologies like Kotlin Multiplatform, Go, and Flutter.</li>
-                                <li>Following the latest trends in mobile UI/UX design and accessibility.</li>
-                                <li>Hiking and exploring nature trails in the UAE.</li>
-                        </ul>
-                </section>
-
-                <footer class="text-center mt-12 text-gray-400 text-sm" data-aos="fade-up">
-                        <p>&copy; 2025 Deepak Samuel Rajan. All rights reserved.</p>
-                </footer>
+<body>
+    <!-- Terminal Overlay (Hidden by Default) -->
+    <div id="terminal-overlay">
+        <div id="terminal-output" class="terminal-output">
+            <span class="text-green">Welcome to DSR-OS v2.0. Type 'help' for available commands.</span>
         </div>
+        <div class="terminal-input-line">
+            <span class="text-amber">visitor@dsr-portfolio:~$</span>
+            <input type="text" id="terminal-input" autocomplete="off" spellcheck="false">
+        </div>
+    </div>
 
-        <!-- Quiz Modal -->
-        <div id="quiz-modal" class="modal-hidden">
-                <div class="modal-content">
-                        <button id="close-quiz-button" class="close-button">&times;</button>
-                        <h3 class="text-xl font-bold mb-4 text-orange-400">Galactic Checkpoint</h3>
-                        <p class="mb-4 text-gray-300">Solve this simple puzzle to proceed.</p>
-                        <input type="text" id="quiz-answer" class="quiz-input" placeholder="Your answer...">
-                        <button id="submit-quiz-button" class="submit-quiz-button">Submit</button>
-                        <p id="quiz-feedback" class="quiz-feedback"></p>
+    <!-- Canvas for/or Scanline overlay -->
+    <div id="scanline-overlay"></div>
+
+    <!-- Honeypot -->
+    <input type="text" name="honeypot" class="hidden" aria-hidden="true">
+
+    <div class="container main-content">
+        <header class="flex-col md-flex-row items-center justify-between mb-12 gap-8" data-aos="fade-down">
+            <div class="flex-shrink-0 profile-wrapper">
+                <img alt="Deepak Samuel Rajan" class="profile-img" src="resources/profile-pic.jpeg" />
+            </div>
+            <div class="md-text-left flex-grow">
+                <h1>Deepak Samuel Rajan</h1>
+                <h3 class="text-green">Full Stack Developer with Cross-Platform Expertise</h3>
+
+                <div class="contact-info flex-col md-flex-row items-center gap-4 text-green mb-8">
+                    <!-- TUI Encrypted Contact Items -->
+                    <div class="encrypted-container" data-value="Kzk3MTUyNDEyODg4NA==" data-type="tel">
+                        <i class="fas fa-phone fa-fw"></i>
+                        <span class="encrypted-text">[ ENCRYPTED_DATA ]</span>
+                    </div>
+                    <div class="encrypted-container" data-value="bWFpbGRzcmFqYW5AZ21haWwuY29t" data-type="mailto">
+                        <i class="fas fa-envelope fa-fw"></i>
+                        <span class="encrypted-text">[ SECURE_MAIL_LINK ]</span>
+                    </div>
+                    <a class="text-green hover:text-amber" href="https://linkedin.com/in/yzzkvf/" id="linkedin-link"
+                        rel="noopener noreferrer" target="_blank">
+                        <i class="fab fa-linkedin fa-fw"></i> LinkedIn Profile
+                    </a>
                 </div>
-        </div>
 
-        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-        <script src="scripts.js"></script>
+                <div class="menu-controls flex-row justify-center gap-4">
+                    <button class="btn" id="show-quiz-button">
+                        <i class="fas fa-file-arrow-down"></i> Download Resume
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Brief Introduction -->
+        <section class="tui-section" data-aos="fade-up">
+            <p class="text-muted text-center italic">
+                A seasoned developer with a passion for building elegant, efficient solutions across
+                mobile, desktop, and server-side platforms, specializing in the Kotlin ecosystem and
+                modern cross-platform technologies.
+            </p>
+        </section>
+
+        <section class="tui-section" data-aos="fade-up">
+            <h2><i class="fas fa-user-tie text-amber"></i> Profile Summary</h2>
+            <p>
+                A highly motivated and results-oriented mobile application developer with 13+ years of
+                experience in designing, developing, and deploying robust and user-friendly applications
+                for Android and iOS platforms. Proven ability to lead complex technical initiatives,
+                integrate emerging technologies, and deliver innovative solutions that enhance operational
+                efficiency and user experience.
+            </p>
+        </section>
+
+        <section class="tui-section" data-aos="fade-up" data-aos-delay="100">
+            <h2><i class="fas fa-star text-amber"></i> Career Highlights</h2>
+            <ul class="list-disc list-inside space-y-2 pl-4">
+                <li>Pioneered the adoption of Kotlin Multiplatform, creating successful cross-platform
+                    applications for Android, iOS, and Desktop.</li>
+                <li>Spearheaded the development and deployment of numerous internal applications for Dubai Police.</li>
+                <li>Successfully integrated National ID reading technology, NFC, and various sensor-based
+                    technologies into mobile applications.</li>
+                <li>Led multiple projects that streamlined manual processes through mobile app development.</li>
+            </ul>
+        </section>
+
+        <section class="tui-section" data-aos="fade-up" data-aos-delay="200">
+            <h2><i class="fas fa-cogs text-amber"></i> Skills Summary</h2>
+            <div class="grid-2">
+                <div>
+                    <h3 class="text-amber mb-4">Core & Multiplatform</h3>
+                    <p>
+                        <span class="skill-tag">Kotlin Multiplatform</span>
+                        <span class="skill-tag">Kotlin</span>
+                        <span class="skill-tag">Java</span>
+                        <span class="skill-tag">Swift</span>
+                        <span class="skill-tag">Go (Golang)</span>
+                        <span class="skill-tag">Rust</span>
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-amber mb-4">Frameworks & Libraries</h3>
+                    <p>
+                        <span class="skill-tag">Jetpack Compose</span>
+                        <span class="skill-tag">SwiftUI</span>
+                        <span class="skill-tag">Ktor</span>
+                        <span class="skill-tag">SQLDelight</span>
+                        <span class="skill-tag">Firebase</span>
+                        <span class="skill-tag">Hilt</span>
+                        <span class="skill-tag">Decompose</span>
+                    </p>
+                </div>
+            </div>
+            <!-- Additional skills simplified for brevity, easy to add back if needed -->
+        </section>
+
+        <section class="tui-section" data-aos="fade-up" data-aos-delay="300">
+            <h2><i class="fas fa-briefcase text-amber"></i> Work Experience</h2>
+
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <h3 class="text-green">Senior System Development Specialist</h3>
+                <h4 class="text-muted">Dubai Police HQ (Full-time)</h4>
+                <p class="text-muted text-sm">December 2015 – Present</p>
+                <ul class="list-disc list-inside">
+                    <li>Led design & deployment of 15+ mobile apps.</li>
+                    <li>Pioneered Kotlin Multiplatform adoption.</li>
+                    <li>Integrated NFC & biometric technologies.</li>
+                </ul>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="fas fa-laptop-code"></i>
+                </div>
+                <h3 class="text-green">Technical Lead</h3>
+                <h4 class="text-muted">R2 International</h4>
+                <p class="text-muted text-sm">August 2011 – November 2015</p>
+                <ul>
+                    <li>Led mobile app development for European clients.</li>
+                    <li>Managed mobile dev team and release cycles.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="tui-section" data-aos="fade-up" data-aos-delay="400">
+            <h2><i class="fas fa-graduation-cap text-amber"></i> Education</h2>
+            <div class="timeline-item">
+                <div class="timeline-icon"><i class="fas fa-university"></i></div>
+                <h3>Master of Computer Applications (MCA)</h3>
+                <p class="text-muted">Bangalore University, India (2011)</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-icon"><i class="fas fa-university"></i></div>
+                <h3>Bachelor of Science (B.Sc.)</h3>
+                <p class="text-muted">RDVV University, India (2008)</p>
+            </div>
+        </section>
+
+        <footer class="text-center mt-12 text-muted text-sm" data-aos="fade-up">
+            <p>&copy; 2025 Deepak Samuel Rajan. All rights reserved. | <span class="text-green">Terminals never
+                    die.</span></p>
+            <p class="mt-4 text-xs" style="opacity: 0.6;">
+                <i class="fas fa-terminal"></i> SYSTEM HINT: Type <span class="text-green">'help'</span> or <span
+                    class="text-green">'ls'</span> anywhere to access the hidden console.
+            </p>
+        </footer>
+    </div>
+
+    <!-- AI Agent Dock (Hidden by default, active on load) -->
+    <div id="agent-dock">
+        <div class="agent-module" id="agent-sentinel">
+            <div class="agent-icon"><i class="fas fa-eye"></i></div>
+            <div class="agent-details">
+                <span class="agent-name">SENTINEL</span>
+                <span class="agent-status">SCANNING...</span>
+            </div>
+            <div class="agent-viz sentinel-viz"></div>
+        </div>
+        <div class="agent-module" id="agent-cipher">
+            <div class="agent-icon"><i class="fas fa-key"></i></div>
+            <div class="agent-details">
+                <span class="agent-name">CIPHER</span>
+                <span class="agent-status" id="cipher-status">IDLE</span>
+            </div>
+            <div class="agent-viz cipher-viz"></div>
+        </div>
+        <div class="agent-module" id="agent-nexus">
+            <div class="agent-icon"><i class="fas fa-network-wired"></i></div>
+            <div class="agent-details">
+                <span class="agent-name">NEXUS</span>
+                <span class="agent-status" id="nexus-status">ONLINE</span>
+            </div>
+            <div class="agent-viz nexus-viz"></div>
+        </div>
+    </div>
+
+    <!-- Quiz Modal -->
+    <div id="quiz-modal" class="modal-hidden">
+        <div class="modal-content">
+            <div class="modal-header flex-row justify-between mb-8">
+                <h3 class="text-amber">SECURITY CLEARANCE REQUIRED</h3>
+                <button id="close-quiz-button" class="btn"
+                    style="border:none; padding:0; box-shadow:none;">&times;</button>
+            </div>
+            <p class="mb-4">Solve this sequence to decrypt data.</p>
+            <input type="text" id="quiz-answer" class="quiz-input" placeholder="Enter sequence...">
+            <button id="submit-quiz-button" class="btn w-full">AUTHENTICATE</button>
+            <p id="quiz-feedback" class="quiz-feedback mt-4 text-center"></p>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="scripts.js"></script>
 </body>
 
 </html>
