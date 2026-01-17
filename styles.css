@@ -685,12 +685,114 @@ p {
     }
 }
 
-/* Desktop Only (Hide on small screens if needed, or scale down) */
+/* --- Mobile Optimization --- */
 @media (max-width: 768px) {
+
+    /* Layout & Spacing */
+    .container {
+        padding: 1rem;
+        padding-top: 2rem;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+        margin-top: 0.5rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .section-title {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    /* Header Alignment */
+    header {
+        text-align: center;
+    }
+
+    .profile-wrapper {
+        margin-bottom: 1rem;
+    }
+
+    /* Contact Info Stacking */
+    .contact-info {
+        flex-direction: column;
+        gap: 0.8rem;
+        align-items: center;
+        /* Center align items */
+        width: 100%;
+    }
+
+    .encrypted-container {
+        margin-right: 0;
+        width: 100%;
+        justify-content: center;
+        padding: 0.8rem;
+        /* Larger touch target */
+    }
+
+    /* Buttons */
+    .btn {
+        width: 100%;
+        /* Full width buttons */
+        padding: 1rem;
+        font-size: 1.1rem;
+    }
+
+    /* Agent Dock - Mobile Bar Style */
     #agent-dock {
-        bottom: 1rem;
-        right: 1rem;
-        transform: scale(0.8);
-        transform-origin: bottom right;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        flex-direction: row;
+        width: 100%;
+        background: rgba(5, 5, 5, 0.95);
+        border-top: 1px solid var(--color-terminal-dim);
+        padding: 0.5rem;
+        justify-content: space-around;
+        transform: none;
+        /* Reset desktop scale */
+        gap: 0;
+    }
+
+    .agent-module {
+        flex-direction: column;
+        gap: 0.2rem;
+        border: none;
+        background: transparent;
+        padding: 0.2rem;
+        flex: 1;
+        justify-content: center;
+        border-right: none;
+    }
+
+    .agent-module.active {
+        transform: translateY(-2px);
+        /* Slight bump up */
+        background: transparent;
+    }
+
+    /* Hide less critical agent details to save space */
+    .agent-name {
+        font-size: 0.6rem;
+        display: none;
+        /* Hide name, keep icon/status */
+    }
+
+    .agent-status {
+        font-size: 0.6rem;
+    }
+
+    .agent-viz {
+        display: none;
+        /* Hide viz on mobile bar */
+    }
+
+    /* Ensure dock doesn't cover content */
+    body {
+        padding-bottom: 80px;
     }
 }

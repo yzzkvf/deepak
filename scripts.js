@@ -304,7 +304,7 @@ function printConsoleWelcome() {
     console.log(`%c${logo}`, style);
     console.log('%cWelcome to the source code.', style);
     console.log('%cLooking for something specific? Try typing "help" in the main window (no input focus needed).', 'color: #e6e6e6; font-family: monospace;');
-    console.log('%cGithub Repo: [Link Needed]', 'color: #ffca28; font-family: monospace;');
+    console.log('%cSystem Status: SECURE | ONLINE', 'color: #4af626; font-family: monospace;');
 }
 
 function initHiddenTerminal() {
@@ -496,6 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
         calculateExperience();
         setupDecryptionEvents();
+        setupSourceProtection(); // Activate Security
         setupQuizModal();
         printConsoleWelcome();
         initHiddenTerminal();
